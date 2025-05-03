@@ -1,29 +1,22 @@
-
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/App";
-
 const Index = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
-
+  const {
+    isAuthenticated
+  } = useAuth();
   useEffect(() => {
     // If user is already authenticated, redirect to dashboard
     if (isAuthenticated) {
       navigate("/dashboard");
     }
   }, [isAuthenticated, navigate]);
-
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-muted/30 fkdm-pattern">
+  return <div className="min-h-screen flex flex-col items-center justify-center bg-muted/30 fkdm-pattern">
       <div className="container mx-auto px-4 text-center">
         <div className="mb-8 inline-block animate-fade-in">
-          <img
-            src="/lovable-uploads/14426bc4-6a4c-4767-bed4-f1c0ede66761.png"
-            alt="FKDM Logo"
-            className="h-28 w-28 mx-auto mb-8 mt-4 floating"
-          />
+          <img src="/lovable-uploads/14426bc4-6a4c-4767-bed4-f1c0ede66761.png" alt="FKDM Logo" className="h-28 w-40 mx-auto mb-8 mt-8 floating object-contain" />
           <h1 className="text-4xl md:text-5xl font-bold text-fkdm-black mb-4">
             FKDM Waspada Analisis Cerdas
           </h1>
@@ -33,7 +26,9 @@ const Index = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto my-12 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto my-12 animate-fade-in" style={{
+        animationDelay: '0.2s'
+      }}>
           <div className="bg-white/80 backdrop-blur-sm p-6 rounded-lg shadow-md border border-fkdm-gold/20 transition-transform hover:transform hover:scale-105">
             <div className="rounded-full bg-fkdm-red/10 p-3 w-12 h-12 flex items-center justify-center mb-4">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-fkdm-red">
@@ -83,12 +78,10 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
-          <Button
-            onClick={() => navigate("/login")}
-            size="lg"
-            className="bg-fkdm-red hover:bg-red-700 text-white px-8 py-6 text-lg"
-          >
+        <div className="animate-fade-in" style={{
+        animationDelay: '0.4s'
+      }}>
+          <Button onClick={() => navigate("/login")} size="lg" className="bg-fkdm-red hover:bg-red-700 text-white px-8 py-6 text-lg">
             Masuk Sistem
           </Button>
         </div>
@@ -101,8 +94,6 @@ const Index = () => {
           </p>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
