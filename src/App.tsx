@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useState, createContext, useContext } from "react";
+import { useState, createContext, useContext, useEffect } from "react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
@@ -32,12 +32,20 @@ export function useAuth() {
 }
 
 const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  // Check if there's a stored auth state in localStorage
+  const storedAuth = localStorage.getItem("fkdm_auth");
+  const initialAuthState = storedAuth ? JSON.parse(storedAuth) : false;
+  
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(initialAuthState);
+
+  // Update localStorage when authentication state changes
+  useEffect(() => {
+    localStorage.setItem("fkdm_auth", JSON.stringify(isAuthenticated));
+  }, [isAuthenticated]);
 
   const login = async (username: string, password: string) => {
-    // Normally, we would make an API call to validate credentials
-    // For now, we'll use dummy credentials
-    if (username === "admin" && password === "admin123") {
+    // Credentials check
+    if (username.toLowerCase() === "admin" && password === "admin123") {
       setIsAuthenticated(true);
       return true;
     }
@@ -46,6 +54,7 @@ const App = () => {
 
   const logout = () => {
     setIsAuthenticated(false);
+    localStorage.removeItem("fkdm_auth");
   };
 
   const authContext = {
