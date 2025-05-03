@@ -58,7 +58,7 @@ const AppLayout = ({
               {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
             <Link to="/" className="flex items-center gap-2">
-              <img src="/lovable-uploads/14426bc4-6a4c-4767-bed4-f1c0ede66761.png" alt="FKDM Logo" className="h-10 w-22" />
+              <img src="/lovable-uploads/14426bc4-6a4c-4767-bed4-f1c0ede66761.png" alt="FKDM Logo" className="h-10 w-9" />
               <span className="hidden md:inline-block font-bold text-lg">
                 FKDM Waspada
               </span>
