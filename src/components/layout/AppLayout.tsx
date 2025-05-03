@@ -1,3 +1,4 @@
+
 import { useAuth } from "@/App";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
@@ -49,7 +50,7 @@ const AppLayout = ({
     path: "/editor",
     icon: <TextCursor className="w-5 h-5" />
   }, {
-    title: "Pengaturan Sistem",
+    title: "Pengaturan",
     path: "/database-settings",
     icon: <Database className="w-5 h-5" />
   }];
