@@ -22,7 +22,7 @@ const Index = () => {
           <img
             src="/lovable-uploads/14426bc4-6a4c-4767-bed4-f1c0ede66761.png"
             alt="FKDM Logo"
-            className="h-32 w-32 mx-auto mb-6 floating"
+            className="h-28 w-28 mx-auto mb-8 mt-4 floating"
           />
           <h1 className="text-4xl md:text-5xl font-bold text-fkdm-black mb-4">
             FKDM Waspada Analisis Cerdas

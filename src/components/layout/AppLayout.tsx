@@ -91,7 +91,7 @@ const AppLayout = ({ children, title, showChat = true }: AppLayoutProps) => {
               <img
                 src="/lovable-uploads/14426bc4-6a4c-4767-bed4-f1c0ede66761.png"
                 alt="FKDM Logo"
-                className="h-10 w-10"
+                className="h-9 w-9"
               />
               <span className="hidden md:inline-block font-bold text-lg">
                 FKDM Waspada

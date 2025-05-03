@@ -56,11 +56,11 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 fkdm-pattern p-4">
       <div className="w-full max-w-md">
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-8">
           <img
             src="/lovable-uploads/14426bc4-6a4c-4767-bed4-f1c0ede66761.png"
             alt="FKDM Logo"
-            className="h-24 w-24"
+            className="h-20 w-20 mt-4"
           />
         </div>
         <Card className="border border-fkdm-gold/20 shadow-lg">
