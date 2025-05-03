@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import AppLayout from "@/components/layout/AppLayout";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, FileSpreadsheet, FileExcel } from "lucide-react";
 
 const DatabaseSettingsPage = () => {
   const { toast } = useToast();
@@ -22,6 +22,10 @@ const DatabaseSettingsPage = () => {
   const [host, setHost] = useState("");
   const [port, setPort] = useState("");
   const [database, setDatabase] = useState("");
+  const [spreadsheetUrl, setSpreadsheetUrl] = useState("");
+  const [excelFilePath, setExcelFilePath] = useState("");
+  const [adminUsername, setAdminUsername] = useState("admin");
+  const [adminPassword, setAdminPassword] = useState("");
 
   const handleSaveConnection = () => {
     toast({
@@ -51,14 +55,147 @@ const DatabaseSettingsPage = () => {
     });
   };
 
+  const handleSaveAdminSettings = () => {
+    toast({
+      title: "Pengaturan Admin Tersimpan",
+      description: "Kredensial admin telah berhasil diperbarui.",
+    });
+  };
+
+  const renderDatabaseTypeFields = () => {
+    switch(dbType) {
+      case "spreadsheet":
+        return (
+          <div className="space-y-2">
+            <Label htmlFor="spreadsheet-url">URL Google Spreadsheet</Label>
+            <Input
+              id="spreadsheet-url"
+              placeholder="https://docs.google.com/spreadsheets/d/..."
+              value={spreadsheetUrl}
+              onChange={(e) => setSpreadsheetUrl(e.target.value)}
+            />
+            <p className="text-sm text-muted-foreground">
+              Pastikan Google Spreadsheet telah dibagikan dengan izin akses.
+            </p>
+          </div>
+        );
+      case "excel":
+        return (
+          <div className="space-y-2">
+            <Label htmlFor="excel-path">File Excel</Label>
+            <div className="flex gap-2">
+              <Input
+                id="excel-path"
+                placeholder="Pilih file Excel"
+                value={excelFilePath}
+                onChange={(e) => setExcelFilePath(e.target.value)}
+                className="flex-1"
+              />
+              <Button variant="outline">Browse</Button>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Format yang didukung: .xlsx, .xls
+            </p>
+          </div>
+        );
+      case "sqlite":
+        return (
+          <div className="space-y-2">
+            <Label htmlFor="database-file">Lokasi File Database</Label>
+            <div className="flex gap-2">
+              <Input
+                id="database-file"
+                placeholder="Pilih lokasi file database"
+                value={database}
+                onChange={(e) => setDatabase(e.target.value)}
+                className="flex-1"
+              />
+              <Button variant="outline">Browse</Button>
+            </div>
+          </div>
+        );
+      default:
+        return (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="connection-string">
+                Connection String (Opsional)
+              </Label>
+              <Input
+                id="connection-string"
+                placeholder="contoh: mysql://user:password@localhost:3306/database"
+                value={connectionString}
+                onChange={(e) => setConnectionString(e.target.value)}
+              />
+              <p className="text-sm text-muted-foreground">
+                Isi connection string atau isi detail koneksi di bawah
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="host">Host</Label>
+                <Input
+                  id="host"
+                  placeholder="localhost"
+                  value={host}
+                  onChange={(e) => setHost(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="port">Port</Label>
+                <Input
+                  id="port"
+                  placeholder={dbType === "mysql" ? "3306" : "5432"}
+                  value={port}
+                  onChange={(e) => setPort(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="database">Nama Database</Label>
+                <Input
+                  id="database"
+                  placeholder="nama_database"
+                  value={database}
+                  onChange={(e) => setDatabase(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  placeholder="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+          </>
+        );
+    }
+  };
+
   return (
-    <AppLayout title="Pengaturan Database">
+    <AppLayout title="Pengaturan Sistem">
       <Tabs defaultValue="connection" className="space-y-4">
-        <TabsList className="grid grid-cols-4 w-full max-w-2xl">
+        <TabsList className="grid grid-cols-5 w-full max-w-3xl">
           <TabsTrigger value="connection">Koneksi</TabsTrigger>
           <TabsTrigger value="sync">Sinkronisasi</TabsTrigger>
           <TabsTrigger value="backup">Backup</TabsTrigger>
           <TabsTrigger value="storage">Penyimpanan</TabsTrigger>
+          <TabsTrigger value="admin">Admin</TabsTrigger>
         </TabsList>
 
         <TabsContent value="connection" className="space-y-4">
@@ -81,97 +218,25 @@ const DatabaseSettingsPage = () => {
                     <SelectValue placeholder="Pilih tipe database" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="mysql">MySQL / MariaDB</SelectItem>
+                    <SelectItem value="mysql" className="flex items-center gap-2">
+                      MySQL / MariaDB
+                    </SelectItem>
                     <SelectItem value="postgresql">PostgreSQL</SelectItem>
                     <SelectItem value="sqlite">SQLite (Lokal)</SelectItem>
                     <SelectItem value="mongodb">MongoDB</SelectItem>
+                    <SelectItem value="spreadsheet" className="flex items-center gap-2">
+                      <FileSpreadsheet className="h-4 w-4" />
+                      Google Spreadsheet
+                    </SelectItem>
+                    <SelectItem value="excel" className="flex items-center gap-2">
+                      <FileExcel className="h-4 w-4" />
+                      Microsoft Excel
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              {dbType === "sqlite" ? (
-                <div className="space-y-2">
-                  <Label htmlFor="database-file">Lokasi File Database</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="database-file"
-                      placeholder="Pilih lokasi file database"
-                      value={database}
-                      onChange={(e) => setDatabase(e.target.value)}
-                      className="flex-1"
-                    />
-                    <Button variant="outline">Browse</Button>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="connection-string">
-                      Connection String (Opsional)
-                    </Label>
-                    <Input
-                      id="connection-string"
-                      placeholder="contoh: mysql://user:password@localhost:3306/database"
-                      value={connectionString}
-                      onChange={(e) => setConnectionString(e.target.value)}
-                    />
-                    <p className="text-sm text-muted-foreground">
-                      Isi connection string atau isi detail koneksi di bawah
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="host">Host</Label>
-                      <Input
-                        id="host"
-                        placeholder="localhost"
-                        value={host}
-                        onChange={(e) => setHost(e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="port">Port</Label>
-                      <Input
-                        id="port"
-                        placeholder={dbType === "mysql" ? "3306" : "5432"}
-                        value={port}
-                        onChange={(e) => setPort(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="database">Nama Database</Label>
-                      <Input
-                        id="database"
-                        placeholder="nama_database"
-                        value={database}
-                        onChange={(e) => setDatabase(e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="username">Username</Label>
-                      <Input
-                        id="username"
-                        placeholder="username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                  </div>
-                </>
-              )}
+              {renderDatabaseTypeFields()}
 
               <div className="flex space-x-2 pt-4">
                 <Button onClick={handleTestConnection}>Test Koneksi</Button>
@@ -397,6 +462,78 @@ const DatabaseSettingsPage = () => {
               <div className="flex space-x-2 pt-4">
                 <Button variant="outline">Bersihkan Cache</Button>
                 <Button>Simpan Pengaturan</Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="admin" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Pengaturan Administrator</CardTitle>
+              <CardDescription>
+                Konfigurasikan akses dan kredensial administrator sistem.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="admin-username">Username Admin</Label>
+                <Input
+                  id="admin-username"
+                  placeholder="Username admin"
+                  value={adminUsername}
+                  onChange={(e) => setAdminUsername(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="admin-password">Password Admin Baru</Label>
+                <Input
+                  id="admin-password"
+                  type="password"
+                  placeholder="Masukkan password baru"
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="admin-password-confirm">Konfirmasi Password</Label>
+                <Input
+                  id="admin-password-confirm"
+                  type="password"
+                  placeholder="Konfirmasi password baru"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="admin-level">Level Akses</Label>
+                <Select defaultValue="super">
+                  <SelectTrigger id="admin-level">
+                    <SelectValue placeholder="Pilih level akses" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="super">Super Admin</SelectItem>
+                    <SelectItem value="editor">Editor</SelectItem>
+                    <SelectItem value="viewer">Viewer</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="admin-email">Email Admin</Label>
+                <Input
+                  id="admin-email"
+                  type="email"
+                  placeholder="email@contoh.com"
+                />
+                <p className="text-sm text-muted-foreground">
+                  Digunakan untuk pemulihan password dan notifikasi
+                </p>
+              </div>
+
+              <div className="flex space-x-2 pt-4">
+                <Button onClick={handleSaveAdminSettings}>Simpan Pengaturan</Button>
               </div>
             </CardContent>
           </Card>

@@ -10,11 +10,13 @@ import { cn } from "@/lib/utils";
 import { chatOpen } from "@/stores/chatStore";
 import { useStore } from "zustand";
 import ChatWidget from "../widgets/ChatWidget";
+
 interface AppLayoutProps {
   children: React.ReactNode;
   title: string;
   showChat?: boolean;
 }
+
 const AppLayout = ({
   children,
   title,
@@ -28,10 +30,12 @@ const AppLayout = ({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isOpen = useStore(chatOpen, state => state.isOpen);
   const toggleChat = useStore(chatOpen, state => state.toggle);
+
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
+
   const menuItems = [{
     title: "Beranda",
     path: "/dashboard",
@@ -45,10 +49,11 @@ const AppLayout = ({
     path: "/editor",
     icon: <TextCursor className="w-5 h-5" />
   }, {
-    title: "Pengaturan Database",
+    title: "Pengaturan Sistem",
     path: "/database-settings",
     icon: <Database className="w-5 h-5" />
   }];
+
   return <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
       <header className="sticky top-0 z-30 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
