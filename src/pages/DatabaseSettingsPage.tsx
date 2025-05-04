@@ -1,7 +1,5 @@
 
-import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/components/ui/use-toast";
 import AppLayout from "@/components/layout/AppLayout";
 
 // Import components
@@ -21,8 +19,6 @@ import {
 } from "@/utils/database-settings-utils";
 
 const DatabaseSettingsPage = () => {
-  const { toast } = useToast();
-
   return (
     <AppLayout title="Pengaturan Sistem">
       <Tabs defaultValue="connection" className="space-y-4">
@@ -36,8 +32,8 @@ const DatabaseSettingsPage = () => {
 
         <TabsContent value="connection" className="space-y-4">
           <ConnectionTab 
-            onSaveConnection={() => handleSaveConnection(toast)} 
-            onTestConnection={() => handleTestConnection(toast)} 
+            onSaveConnection={handleSaveConnection} 
+            onTestConnection={handleTestConnection} 
           />
         </TabsContent>
 
@@ -46,15 +42,15 @@ const DatabaseSettingsPage = () => {
         </TabsContent>
 
         <TabsContent value="backup" className="space-y-4">
-          <BackupTab onBackupNow={() => handleBackupNow(toast)} />
+          <BackupTab onBackupNow={handleBackupNow} />
         </TabsContent>
 
         <TabsContent value="storage" className="space-y-4">
-          <StorageTab onImport={() => handleImport(toast)} />
+          <StorageTab onImport={handleImport} />
         </TabsContent>
 
         <TabsContent value="admin" className="space-y-4">
-          <AdminTab onSaveAdminSettings={() => handleSaveAdminSettings(toast)} />
+          <AdminTab onSaveAdminSettings={handleSaveAdminSettings} />
         </TabsContent>
       </Tabs>
     </AppLayout>
