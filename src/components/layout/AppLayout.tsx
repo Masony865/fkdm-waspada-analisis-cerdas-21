@@ -86,7 +86,7 @@ const AppLayout = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>
+                <DropdownMenuLabel>Login Anggota</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 
                 {isAuthenticated ? (

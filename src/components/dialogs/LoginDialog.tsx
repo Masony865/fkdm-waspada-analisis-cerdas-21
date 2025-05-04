@@ -21,10 +21,10 @@ interface LoginDialogProps {
 }
 
 const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [nik, setNik] = useState("");
+  const [nama, setNama] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [showNama, setShowNama] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -34,7 +34,8 @@ const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
     setIsLoading(true);
 
     try {
-      const success = await login(username, password);
+      // Use NIK as username and NAMA as password
+      const success = await login(nik, nama);
       if (success) {
         toast({
           title: "Login Berhasil",
@@ -46,7 +47,7 @@ const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
         toast({
           variant: "destructive",
           title: "Login Gagal",
-          description: "Username atau password salah.",
+          description: "NIK atau Nama tidak sesuai.",
         });
       }
     } catch (error) {
@@ -60,8 +61,8 @@ const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
     }
   };
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
+  const toggleNamaVisibility = () => {
+    setShowNama(!showNama);
   };
 
   return (
@@ -84,42 +85,42 @@ const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="username">Username</Label>
+            <Label htmlFor="nik">NIK</Label>
             <Input
-              id="username"
+              id="nik"
               type="text"
-              placeholder="Masukkan username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Masukkan NIK Anda"
+              value={nik}
+              onChange={(e) => setNik(e.target.value)}
               required
             />
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="nama">Nama</Label>
               <a
                 href="#"
                 className="text-sm text-primary hover:underline"
               >
-                Lupa password?
+                Lupa nama?
               </a>
             </div>
             <div className="relative">
               <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Masukkan password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                id="nama"
+                type={showNama ? "text" : "password"}
+                placeholder="Masukkan nama lengkap"
+                value={nama}
+                onChange={(e) => setNama(e.target.value)}
                 required
                 className="pr-10"
               />
               <button
                 type="button"
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                onClick={togglePasswordVisibility}
+                onClick={toggleNamaVisibility}
               >
-                {showPassword ? (
+                {showNama ? (
                   <EyeOff className="h-4 w-4" />
                 ) : (
                   <Eye className="h-4 w-4" />
@@ -129,7 +130,7 @@ const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
           </div>
           
           <div className="text-sm text-muted-foreground">
-            <p>Default login: username <strong>admin</strong>, password <strong>admin123</strong></p>
+            <p>Default login: NIK <strong>3203123456789010</strong>, Nama <strong>Budi Santoso</strong></p>
           </div>
           
           <Button
