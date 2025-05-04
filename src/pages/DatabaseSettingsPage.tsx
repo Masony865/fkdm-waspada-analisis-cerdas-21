@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import AppLayout from "@/components/layout/AppLayout";
-import { PlusCircle, FileSpreadsheet, FileExcel } from "lucide-react";
+import { PlusCircle, FileSpreadsheet, FileText } from "lucide-react";
 
 const DatabaseSettingsPage = () => {
   const { toast } = useToast();
@@ -228,7 +229,7 @@ const DatabaseSettingsPage = () => {
                       Google Spreadsheet
                     </SelectItem>
                     <SelectItem value="excel" className="flex items-center gap-2">
-                      <FileExcel className="h-4 w-4" />
+                      <FileText className="h-4 w-4" />
                       Microsoft Excel
                     </SelectItem>
                   </SelectContent>
