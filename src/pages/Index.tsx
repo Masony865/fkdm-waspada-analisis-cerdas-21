@@ -1,18 +1,21 @@
+
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/App";
+
 const Index = () => {
   const navigate = useNavigate();
   const {
     isAuthenticated
   } = useAuth();
+  
   useEffect(() => {
     // If user is already authenticated, redirect to dashboard
     if (isAuthenticated) {
       navigate("/dashboard");
     }
   }, [isAuthenticated, navigate]);
+  
   return <div className="min-h-screen flex flex-col items-center justify-center bg-muted/30 fkdm-pattern">
       <div className="container mx-auto px-4 text-center">
         <div className="mb-8 inline-block animate-fade-in">
@@ -76,14 +79,6 @@ const Index = () => {
               Editor teks dengan template untuk pembuatan laporan yang terstruktur dan efisien.
             </p>
           </div>
-        </div>
-
-        <div className="animate-fade-in" style={{
-        animationDelay: '0.4s'
-      }}>
-          <Button onClick={() => navigate("/login")} size="lg" className="bg-fkdm-red hover:bg-red-700 text-white px-8 py-6 text-lg">
-            Masuk Sistem
-          </Button>
         </div>
       </div>
       

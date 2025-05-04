@@ -2,7 +2,7 @@
 import { useAuth } from "@/App";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Database, BarChart, TextCursor, LogIn, Home, Settings, Menu, X, ChevronDown, ChevronRight } from "lucide-react";
+import { Database, BarChart, TextCursor, LogIn, Home, Settings, Menu, X, ChevronDown, ChevronRight, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { chatOpen } from "@/stores/chatStore";
 import { useStore } from "zustand";
 import ChatWidget from "../widgets/ChatWidget";
+import LoginDialog from "../dialogs/LoginDialog";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -29,12 +30,13 @@ const AppLayout = ({
   } = useAuth();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const isOpen = useStore(chatOpen, state => state.isOpen);
   const toggleChat = useStore(chatOpen, state => state.toggle);
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/");
   };
 
   const menuItems = [{
@@ -72,37 +74,47 @@ const AppLayout = ({
           </div>
 
           <div className="ml-auto flex items-center gap-2">
-            {isAuthenticated ? <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                    <Avatar>
-                      <AvatarImage src="" />
-                      <AvatarFallback className="bg-fkdm-red text-white">
-                        FK
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
-                  <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Pengaturan</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Avatar>
+                    <AvatarImage src="" />
+                    <AvatarFallback className="bg-fkdm-red text-white">
+                      {isAuthenticated ? "FK" : <UserRound className="h-5 w-5" />}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                
+                {isAuthenticated ? (
+                  <>
+                    <DropdownMenuItem>
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Pengaturan</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout}>
+                      <LogIn className="mr-2 h-4 w-4" />
+                      <span>Keluar</span>
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <DropdownMenuItem onClick={() => setIsLoginDialogOpen(true)}>
                     <LogIn className="mr-2 h-4 w-4" />
-                    <span>Keluar</span>
+                    <span>Masuk</span>
                   </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu> : <Button variant="default" onClick={() => navigate("/login")}>
-                <LogIn className="mr-2 h-4 w-4" />
-                Masuk
-              </Button>}
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>
+
+      {/* Login Dialog */}
+      <LoginDialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen} />
 
       {/* Mobile menu */}
       {isMobileMenuOpen && <div className="md:hidden fixed inset-0 top-16 z-20 bg-background/80 backdrop-blur-sm">
