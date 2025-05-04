@@ -11,7 +11,7 @@ interface StorageTabProps {
 
 const StorageTab = ({ onImport }: StorageTabProps) => {
   return (
-    <Card>
+    <Card className="transition-colors">
       <CardHeader>
         <CardTitle>Pengaturan Penyimpanan</CardTitle>
         <CardDescription>
@@ -52,9 +52,9 @@ const StorageTab = ({ onImport }: StorageTabProps) => {
 
         <div className="space-y-2">
           <Label>Penggunaan Penyimpanan</Label>
-          <div className="h-4 w-full bg-muted rounded-full overflow-hidden">
+          <div className="h-4 w-full bg-muted rounded-full overflow-hidden dark:bg-muted/40">
             <div
-              className="h-full bg-fkdm-red"
+              className="h-full bg-fkdm-red dark:bg-fkdm-red"
               style={{ width: "35%" }}
             ></div>
           </div>
@@ -83,7 +83,7 @@ const StorageTab = ({ onImport }: StorageTabProps) => {
         </div>
 
         <div className="flex space-x-2 pt-4">
-          <Button variant="outline">Bersihkan Cache</Button>
+          <Button variant="outline" className="hover:bg-muted/60 dark:hover:bg-muted/30">Bersihkan Cache</Button>
           <Button>Simpan Pengaturan</Button>
         </div>
       </CardContent>

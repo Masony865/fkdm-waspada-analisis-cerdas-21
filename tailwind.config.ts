@@ -67,7 +67,8 @@ export default {
 					red: '#E30613',
 					black: '#000000',
 					gold: '#D4AF37',
-					green: '#009846'
+					green: '#009846',
+					'dark-red': '#B60510' // Darker shade of red for dark theme
 				}
 			},
 			borderRadius: {

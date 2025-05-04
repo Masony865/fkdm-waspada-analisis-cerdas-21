@@ -1,6 +1,9 @@
 
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AppLayout from "@/components/layout/AppLayout";
+import { Sun, Moon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 // Import components
 import ConnectionTab from "@/components/database-settings/ConnectionTab";
@@ -19,8 +22,31 @@ import {
 } from "@/utils/database-settings-utils";
 
 const DatabaseSettingsPage = () => {
+  const [theme, setTheme] = useState<"light" | "dark">(
+    localStorage.getItem("theme") as "light" | "dark" || 
+    (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+  );
+
+  // Apply theme when component mounts and when theme changes
+  useEffect(() => {
+    const root = window.document.documentElement;
+    root.classList.remove("light", "dark");
+    root.classList.add(theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
+
   return (
     <AppLayout title="Pengaturan Sistem">
+      <div className="flex justify-end mb-4">
+        <Button variant="outline" size="icon" onClick={toggleTheme}>
+          {theme === "dark" ? <Sun className="h-[1.2rem] w-[1.2rem]" /> : <Moon className="h-[1.2rem] w-[1.2rem]" />}
+        </Button>
+      </div>
+      
       <Tabs defaultValue="connection" className="space-y-4">
         <TabsList className="grid grid-cols-5 w-full max-w-3xl">
           <TabsTrigger value="connection">Koneksi</TabsTrigger>
