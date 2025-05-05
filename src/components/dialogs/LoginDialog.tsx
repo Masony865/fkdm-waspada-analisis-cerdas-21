@@ -47,7 +47,7 @@ const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
         toast({
           variant: "destructive",
           title: "Login Gagal",
-          description: "NIK atau Nama tidak sesuai.",
+          description: "NIK atau Nama tidak sesuai data anggota.",
         });
       }
     } catch (error) {

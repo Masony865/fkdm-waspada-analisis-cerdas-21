@@ -26,6 +26,7 @@ const AppLayout = ({
 }: AppLayoutProps) => {
   const {
     isAuthenticated,
+    userData,
     logout
   } = useAuth();
   const navigate = useNavigate();
@@ -78,14 +79,37 @@ const AppLayout = ({
             </Link>
           </div>
 
+          {/* User greeting section */}
+          {isAuthenticated && userData && (
+            <div className="hidden md:flex items-center ml-6">
+              <div className="flex items-center gap-3">
+                <Avatar className="h-8 w-8 border border-fkdm-gold/30">
+                  <AvatarImage src={userData.pasfoto_convert || ""} alt={userData.nama} />
+                  <AvatarFallback className="bg-fkdm-red text-white">
+                    {userData.nama.split(' ').map(name => name[0]).join('').substring(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="hidden lg:block">
+                  <p className="text-sm font-medium">Selamat datang, {userData.nama}</p>
+                  <p className="text-xs text-muted-foreground">{userData.jabatan} | {userData.wilayah}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="ml-auto flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                   <Avatar>
-                    <AvatarImage src="" />
+                    {isAuthenticated && userData ? (
+                      <AvatarImage src={userData.pasfoto_convert || ""} alt={userData.nama} />
+                    ) : null}
                     <AvatarFallback className="bg-fkdm-red text-white">
-                      {isAuthenticated ? "FK" : <UserRound className="h-5 w-5" />}
+                      {isAuthenticated && userData ? 
+                        userData.nama.split(' ').map(name => name[0]).join('').substring(0, 2).toUpperCase() : 
+                        <UserRound className="h-5 w-5" />
+                      }
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -94,8 +118,14 @@ const AppLayout = ({
                 <DropdownMenuLabel>Login Anggota</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 
-                {isAuthenticated ? (
+                {isAuthenticated && userData ? (
                   <>
+                    <div className="px-2 py-1.5">
+                      <p className="text-sm font-medium leading-none">{userData.nama}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{userData.jabatan}</p>
+                      <p className="text-xs text-muted-foreground">{userData.wilayah}</p>
+                    </div>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => navigate("/database-settings")}>
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Pengaturan</span>
@@ -129,6 +159,22 @@ const AppLayout = ({
       {isMobileMenuOpen && <div className="md:hidden fixed inset-0 top-16 z-20 bg-background/80 backdrop-blur-sm">
           <nav className="fixed inset-0 top-16 bottom-auto h-[calc(100vh-4rem)] w-full overflow-auto bg-background p-6">
             <div className="flex flex-col space-y-4">
+              {/* Show user info on mobile menu when authenticated */}
+              {isAuthenticated && userData && (
+                <div className="flex items-center gap-3 py-3 border-b">
+                  <Avatar className="h-10 w-10 border border-fkdm-gold/30">
+                    <AvatarImage src={userData.pasfoto_convert || ""} alt={userData.nama} />
+                    <AvatarFallback className="bg-fkdm-red text-white">
+                      {userData.nama.split(' ').map(name => name[0]).join('').substring(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium">{userData.nama}</p>
+                    <p className="text-xs text-muted-foreground">{userData.jabatan} | {userData.wilayah}</p>
+                  </div>
+                </div>
+              )}
+              
               {menuItems.map(item => <Link key={item.path} to={item.path} className="flex items-center gap-2 py-2 text-lg font-medium" onClick={() => setIsMobileMenuOpen(false)}>
                   {item.icon}
                   <span>{item.title}</span>

@@ -15,9 +15,18 @@ import DatabaseSettingsPage from "./pages/DatabaseSettingsPage";
 
 const queryClient = new QueryClient();
 
+interface UserData {
+  id: string;
+  nama: string;
+  jabatan: string;
+  wilayah: string;
+  pasfoto_convert?: string;
+}
+
 interface AuthContextType {
   isAuthenticated: boolean;
-  login: (username: string, password: string) => Promise<boolean>;
+  userData: UserData | null;
+  login: (nik: string, nama: string) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -31,27 +40,52 @@ export function useAuth() {
   return context;
 }
 
+// Mock function to simulate Supabase authentication
+// In a real implementation, this would be replaced with actual Supabase calls
+const checkCredentialsWithSupabase = async (nik: string, nama: string): Promise<UserData | null> => {
+  // Simple authentication for NIK and NAMA
+  if (nik === "3203123456789010" && nama === "Budi Santoso") {
+    return {
+      id: "1",
+      nama: "Budi Santoso",
+      jabatan: "Ketua FKDM",
+      wilayah: "Kecamatan Cikole",
+      pasfoto_convert: "https://i.pravatar.cc/150?img=3"
+    };
+  }
+  // Legacy admin login
+  if (nik.toLowerCase() === "admin" && nama === "admin123") {
+    return {
+      id: "admin",
+      nama: "Admin FKDM",
+      jabatan: "Administrator",
+      wilayah: "Kota Sukabumi",
+      pasfoto_convert: "https://i.pravatar.cc/150?img=8"
+    };
+  }
+  return null;
+};
+
 const App = () => {
   // Check if there's a stored auth state in localStorage
   const storedAuth = localStorage.getItem("fkdm_auth");
-  const initialAuthState = storedAuth ? JSON.parse(storedAuth) : false;
+  const initialAuthState = storedAuth ? JSON.parse(storedAuth) : { isAuthenticated: false, userData: null };
   
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(initialAuthState);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(initialAuthState.isAuthenticated);
+  const [userData, setUserData] = useState<UserData | null>(initialAuthState.userData);
 
   // Update localStorage when authentication state changes
   useEffect(() => {
-    localStorage.setItem("fkdm_auth", JSON.stringify(isAuthenticated));
-  }, [isAuthenticated]);
+    localStorage.setItem("fkdm_auth", JSON.stringify({ isAuthenticated, userData }));
+  }, [isAuthenticated, userData]);
 
-  const login = async (username: string, password: string) => {
-    // Simple authentication for NIK and NAMA
-    if (username === "3203123456789010" && password === "Budi Santoso") {
+  const login = async (nik: string, nama: string) => {
+    // Check credentials against "ANGGOTA FKDM" table in Supabase
+    const user = await checkCredentialsWithSupabase(nik, nama);
+    
+    if (user) {
       setIsAuthenticated(true);
-      return true;
-    }
-    // Legacy admin login
-    if (username.toLowerCase() === "admin" && password === "admin123") {
-      setIsAuthenticated(true);
+      setUserData(user);
       return true;
     }
     return false;
@@ -59,11 +93,13 @@ const App = () => {
 
   const logout = () => {
     setIsAuthenticated(false);
+    setUserData(null);
     localStorage.removeItem("fkdm_auth");
   };
 
   const authContext = {
     isAuthenticated,
+    userData,
     login,
     logout,
   };
