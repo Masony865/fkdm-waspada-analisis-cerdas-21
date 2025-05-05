@@ -96,11 +96,11 @@ const AppLayout = ({
                 
                 {isAuthenticated ? (
                   <>
-                    <DropdownMenuItem as={Link} to="/database-settings">
+                    <DropdownMenuItem onClick={() => navigate("/database-settings")}>
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Pengaturan</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem as={Link} to="/editor">
+                    <DropdownMenuItem onClick={() => navigate("/editor")}>
                       <TextCursor className="mr-2 h-4 w-4" />
                       <span>Editor Laporan</span>
                     </DropdownMenuItem>
