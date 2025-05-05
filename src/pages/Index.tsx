@@ -2,12 +2,14 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/App";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import LoginDialog from "@/components/dialogs/LoginDialog";
 
 const Index = () => {
   const navigate = useNavigate();
-  const {
-    isAuthenticated
-  } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   
   useEffect(() => {
     // If user is already authenticated, redirect to dashboard
@@ -27,6 +29,16 @@ const Index = () => {
             Sistem Deteksi Dini dan Analisis Forum Kewaspadaan Dini Masyarakat
             (FKDM) Kota Sukabumi
           </p>
+
+          <div className="mt-8">
+            <Button 
+              size="lg" 
+              className="bg-fkdm-red hover:bg-red-700"
+              onClick={() => setIsLoginDialogOpen(true)}
+            >
+              Masuk ke Sistem
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto my-12 animate-fade-in" style={{
@@ -89,6 +101,8 @@ const Index = () => {
           </p>
         </div>
       </footer>
+
+      <LoginDialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen} />
     </div>;
 };
 export default Index;

@@ -39,7 +39,8 @@ const AppLayout = ({
     navigate("/");
   };
 
-  const menuItems = [{
+  // Only show these menu items if the user is authenticated
+  const menuItems = isAuthenticated ? [{
     title: "Beranda",
     path: "/dashboard",
     icon: <Home className="w-5 h-5" />
@@ -55,6 +56,10 @@ const AppLayout = ({
     title: "Pengaturan",
     path: "/database-settings",
     icon: <Database className="w-5 h-5" />
+  }] : [{
+    title: "Beranda",
+    path: "/",
+    icon: <Home className="w-5 h-5" />
   }];
 
   return <div className="min-h-screen flex flex-col bg-background">
@@ -91,9 +96,13 @@ const AppLayout = ({
                 
                 {isAuthenticated ? (
                   <>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem as={Link} to="/database-settings">
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Pengaturan</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem as={Link} to="/editor">
+                      <TextCursor className="mr-2 h-4 w-4" />
+                      <span>Editor Laporan</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleLogout}>
@@ -124,6 +133,18 @@ const AppLayout = ({
                   {item.icon}
                   <span>{item.title}</span>
                 </Link>)}
+              {!isAuthenticated && (
+                <button 
+                  className="flex items-center gap-2 py-2 text-lg font-medium"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsLoginDialogOpen(true);
+                  }}
+                >
+                  <LogIn className="w-5 h-5" />
+                  <span>Masuk</span>
+                </button>
+              )}
             </div>
           </nav>
         </div>}
@@ -140,6 +161,15 @@ const AppLayout = ({
                   {item.icon}
                   {item.title}
                 </Link>)}
+              {!isAuthenticated && (
+                <button 
+                  className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground w-full text-left"
+                  onClick={() => setIsLoginDialogOpen(true)}
+                >
+                  <LogIn className="w-5 h-5" />
+                  Masuk
+                </button>
+              )}
             </nav>
             <div className="mt-auto">
               <Separator className="my-4" />
@@ -160,7 +190,7 @@ const AppLayout = ({
               <nav>
                 <ul className="flex gap-1 text-sm text-muted-foreground">
                   <li>
-                    <Link to="/dashboard" className="hover:text-foreground">
+                    <Link to={isAuthenticated ? "/dashboard" : "/"} className="hover:text-foreground">
                       Beranda
                     </Link>
                   </li>
@@ -187,4 +217,5 @@ const AppLayout = ({
         </>}
     </div>;
 };
+
 export default AppLayout;

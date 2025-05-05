@@ -44,7 +44,12 @@ const App = () => {
   }, [isAuthenticated]);
 
   const login = async (username: string, password: string) => {
-    // Credentials check
+    // Simple authentication for NIK and NAMA
+    if (username === "3203123456789010" && password === "Budi Santoso") {
+      setIsAuthenticated(true);
+      return true;
+    }
+    // Legacy admin login
     if (username.toLowerCase() === "admin" && password === "admin123") {
       setIsAuthenticated(true);
       return true;
