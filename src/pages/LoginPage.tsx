@@ -30,7 +30,7 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      // Use NIK as username and NAMA as password
+      console.log("Attempting login with NIK:", nik, "and NAMA:", nama);
       const success = await login(nik, nama);
       if (success) {
         toast({
@@ -46,6 +46,7 @@ const LoginPage = () => {
         });
       }
     } catch (error) {
+      console.error("Login error:", error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -126,7 +127,8 @@ const LoginPage = () => {
                 </div>
               </div>
               <div className="text-sm text-muted-foreground pb-2">
-                <p>Default login: NIK <strong>3203123456789010</strong>, Nama <strong>Budi Santoso</strong></p>
+                <p>Default login: NIK <strong>3203123456789010</strong>, Nama <strong>Budi Santoso</strong> atau NIK anggota lainnya dari tabel ANGGOTA FKDM</p>
+                <p className="mt-1">Admin: NIK <strong>admin</strong>, Nama <strong>admin123</strong></p>
               </div>
               <Button
                 type="submit"

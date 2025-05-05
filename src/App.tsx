@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import DataAnalisisPage from "./pages/DataAnalisisPage";
 import EditorPage from "./pages/EditorPage";
 import DatabaseSettingsPage from "./pages/DatabaseSettingsPage";
+import { supabase } from "./integrations/supabase/client";
 
 const queryClient = new QueryClient();
 
@@ -40,30 +41,43 @@ export function useAuth() {
   return context;
 }
 
-// Mock function to simulate Supabase authentication
-// In a real implementation, this would be replaced with actual Supabase calls
+// Function to check credentials against ANGGOTA FKDM table in Supabase
 const checkCredentialsWithSupabase = async (nik: string, nama: string): Promise<UserData | null> => {
-  // Simple authentication for NIK and NAMA
-  if (nik === "3203123456789010" && nama === "Budi Santoso") {
+  try {
+    console.log("Checking credentials for NIK:", nik, "and NAMA:", nama);
+    
+    // Query ANGGOTA FKDM table to find a matching member
+    const { data, error } = await supabase
+      .from("ANGGOTA FKDM")
+      .select("id, NIK, NAMA, JABATAN, WILAYAH, PASFOTO_CONVERT")
+      .eq("NIK", nik)
+      .eq("NAMA", nama)
+      .maybeSingle();
+    
+    if (error) {
+      console.error("Supabase query error:", error);
+      return null;
+    }
+    
+    if (!data) {
+      console.log("No matching FKDM member found");
+      return null;
+    }
+
+    console.log("Found matching FKDM member:", data);
+    
+    // Return user data from ANGGOTA FKDM table
     return {
-      id: "1",
-      nama: "Budi Santoso",
-      jabatan: "Ketua FKDM",
-      wilayah: "Kecamatan Cikole",
-      pasfoto_convert: "https://i.pravatar.cc/150?img=3"
+      id: String(data.id),
+      nama: data.NAMA || "",
+      jabatan: data.JABATAN || "",
+      wilayah: data.WILAYAH || "",
+      pasfoto_convert: data.PASFOTO_CONVERT || ""
     };
+  } catch (error) {
+    console.error("Error checking credentials:", error);
+    return null;
   }
-  // Legacy admin login
-  if (nik.toLowerCase() === "admin" && nama === "admin123") {
-    return {
-      id: "admin",
-      nama: "Admin FKDM",
-      jabatan: "Administrator",
-      wilayah: "Kota Sukabumi",
-      pasfoto_convert: "https://i.pravatar.cc/150?img=8"
-    };
-  }
-  return null;
 };
 
 const App = () => {
@@ -88,6 +102,21 @@ const App = () => {
       setUserData(user);
       return true;
     }
+    
+    // If no user found in ANGGOTA FKDM table, check for legacy admin login
+    if (nik.toLowerCase() === "admin" && nama === "admin123") {
+      const adminUser = {
+        id: "admin",
+        nama: "Admin FKDM",
+        jabatan: "Administrator",
+        wilayah: "Kota Sukabumi",
+        pasfoto_convert: "https://i.pravatar.cc/150?img=8"
+      };
+      setIsAuthenticated(true);
+      setUserData(adminUser);
+      return true;
+    }
+    
     return false;
   };
 

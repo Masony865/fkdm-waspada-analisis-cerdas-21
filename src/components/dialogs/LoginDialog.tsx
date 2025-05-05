@@ -34,7 +34,7 @@ const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
     setIsLoading(true);
 
     try {
-      // Use NIK as username and NAMA as password
+      console.log("Attempting login with NIK:", nik, "and NAMA:", nama);
       const success = await login(nik, nama);
       if (success) {
         toast({
@@ -51,6 +51,7 @@ const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
         });
       }
     } catch (error) {
+      console.error("Login error:", error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -131,6 +132,7 @@ const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
           
           <div className="text-sm text-muted-foreground">
             <p>Default login: NIK <strong>3203123456789010</strong>, Nama <strong>Budi Santoso</strong></p>
+            <p className="mt-1">Admin: NIK <strong>admin</strong>, Nama <strong>admin123</strong></p>
           </div>
           
           <Button
