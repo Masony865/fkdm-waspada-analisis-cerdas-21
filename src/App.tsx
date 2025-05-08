@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,7 +20,7 @@ interface UserData {
   nama: string;
   jabatan: string;
   wilayah: string;
-  pasfoto_convert?: string;
+  pasfoto_url?: string;
 }
 
 interface AuthContextType {
@@ -49,7 +48,7 @@ const checkCredentialsWithSupabase = async (nik: string, nama: string): Promise<
     // Query ANGGOTA FKDM table to find a matching member
     const { data, error } = await supabase
       .from("ANGGOTA FKDM")
-      .select("id, NIK, NAMA, JABATAN, WILAYAH, PASFOTO_CONVERT")
+      .select("id, NIK, NAMA, JABATAN, WILAYAH, PASFOTO")
       .eq("NIK", nik)
       .eq("NAMA", nama)
       .maybeSingle();
@@ -72,7 +71,7 @@ const checkCredentialsWithSupabase = async (nik: string, nama: string): Promise<
       nama: data.NAMA || "",
       jabatan: data.JABATAN || "",
       wilayah: data.WILAYAH || "",
-      pasfoto_convert: data.PASFOTO_CONVERT || ""
+      pasfoto_url: data.PASFOTO || ""
     };
   } catch (error) {
     console.error("Error checking credentials:", error);
@@ -103,14 +102,14 @@ const App = () => {
       return true;
     }
     
-    // If no user found in ANGGOTA FKDM table, check for legacy admin login
+    // If no user found in ANGGOTA FKDM table, check for admin login
     if (nik.toLowerCase() === "admin" && nama === "admin123") {
       const adminUser = {
         id: "admin",
         nama: "Admin FKDM",
         jabatan: "Administrator",
         wilayah: "Kota Sukabumi",
-        pasfoto_convert: "https://i.pravatar.cc/150?img=8"
+        pasfoto_url: "https://i.pravatar.cc/150?img=8"
       };
       setIsAuthenticated(true);
       setUserData(adminUser);

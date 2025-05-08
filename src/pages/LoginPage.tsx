@@ -126,10 +126,7 @@ const LoginPage = () => {
                   </button>
                 </div>
               </div>
-              <div className="text-sm text-muted-foreground pb-2">
-                <p>Default login: NIK <strong>3203123456789010</strong>, Nama <strong>Budi Santoso</strong> atau NIK anggota lainnya dari tabel ANGGOTA FKDM</p>
-                <p className="mt-1">Admin: NIK <strong>admin</strong>, Nama <strong>admin123</strong></p>
-              </div>
+              {/* Remove default login information */}
               <Button
                 type="submit"
                 className="w-full bg-fkdm-red hover:bg-red-700"

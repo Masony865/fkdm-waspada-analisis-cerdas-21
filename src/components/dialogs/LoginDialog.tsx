@@ -130,10 +130,7 @@ const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
             </div>
           </div>
           
-          <div className="text-sm text-muted-foreground">
-            <p>Default login: NIK <strong>3203123456789010</strong>, Nama <strong>Budi Santoso</strong></p>
-            <p className="mt-1">Admin: NIK <strong>admin</strong>, Nama <strong>admin123</strong></p>
-          </div>
+          {/* Remove default login info section */}
           
           <Button
             type="submit"

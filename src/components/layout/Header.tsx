@@ -43,7 +43,7 @@ const Header = ({ isMobileMenuOpen, setIsMobileMenuOpen, setIsLoginDialogOpen }:
           <div className="hidden md:flex items-center ml-6">
             <div className="flex items-center gap-3">
               <Avatar className="h-8 w-8 border border-fkdm-gold/30">
-                <AvatarImage src={userData.pasfoto_convert || ""} alt={userData.nama} />
+                <AvatarImage src={userData.pasfoto_url || ""} alt={userData.nama} />
                 <AvatarFallback className="bg-fkdm-red text-white">
                   {userData.nama.split(' ').map(name => name[0]).join('').substring(0, 2).toUpperCase()}
                 </AvatarFallback>
@@ -62,7 +62,7 @@ const Header = ({ isMobileMenuOpen, setIsMobileMenuOpen, setIsLoginDialogOpen }:
               <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                 <Avatar>
                   {isAuthenticated && userData ? (
-                    <AvatarImage src={userData.pasfoto_convert || ""} alt={userData.nama} />
+                    <AvatarImage src={userData.pasfoto_url || ""} alt={userData.nama} />
                   ) : null}
                   <AvatarFallback className="bg-fkdm-red text-white">
                     {isAuthenticated && userData ? 
