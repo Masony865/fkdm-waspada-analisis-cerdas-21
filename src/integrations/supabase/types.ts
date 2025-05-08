@@ -102,6 +102,229 @@ export type Database = {
         }
         Relationships: []
       }
+      aspek_kehidupan: {
+        Row: {
+          created_at: string | null
+          deskripsi: string | null
+          id: string
+          nama: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          deskripsi?: string | null
+          id?: string
+          nama: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          deskripsi?: string | null
+          id?: string
+          nama?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      kecamatan: {
+        Row: {
+          created_at: string | null
+          deskripsi: string | null
+          id: string
+          kode: string | null
+          nama: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          deskripsi?: string | null
+          id?: string
+          kode?: string | null
+          nama: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          deskripsi?: string | null
+          id?: string
+          kode?: string | null
+          nama?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      kelurahan: {
+        Row: {
+          created_at: string | null
+          deskripsi: string | null
+          id: string
+          kecamatan_id: string
+          kode: string | null
+          nama: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          deskripsi?: string | null
+          id?: string
+          kecamatan_id: string
+          kode?: string | null
+          nama: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          deskripsi?: string | null
+          id?: string
+          kecamatan_id?: string
+          kode?: string | null
+          nama?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kelurahan_kecamatan_id_fkey"
+            columns: ["kecamatan_id"]
+            isOneToOne: false
+            referencedRelation: "kecamatan"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      laporan: {
+        Row: {
+          aspek_id: string
+          bukti_url: string[] | null
+          created_at: string | null
+          deskripsi: string
+          id: string
+          jenis: Database["public"]["Enums"]["jenis_athg"]
+          judul: string
+          kecamatan_id: string
+          kelurahan_id: string
+          lokasi_detail: string | null
+          pelapor_id: number | null
+          pelapor_nama: string | null
+          status: Database["public"]["Enums"]["status_laporan"]
+          tanggal_kejadian: string
+          tindak_lanjut: string | null
+          updated_at: string | null
+          waktu_kejadian: string | null
+        }
+        Insert: {
+          aspek_id: string
+          bukti_url?: string[] | null
+          created_at?: string | null
+          deskripsi: string
+          id?: string
+          jenis: Database["public"]["Enums"]["jenis_athg"]
+          judul: string
+          kecamatan_id: string
+          kelurahan_id: string
+          lokasi_detail?: string | null
+          pelapor_id?: number | null
+          pelapor_nama?: string | null
+          status?: Database["public"]["Enums"]["status_laporan"]
+          tanggal_kejadian: string
+          tindak_lanjut?: string | null
+          updated_at?: string | null
+          waktu_kejadian?: string | null
+        }
+        Update: {
+          aspek_id?: string
+          bukti_url?: string[] | null
+          created_at?: string | null
+          deskripsi?: string
+          id?: string
+          jenis?: Database["public"]["Enums"]["jenis_athg"]
+          judul?: string
+          kecamatan_id?: string
+          kelurahan_id?: string
+          lokasi_detail?: string | null
+          pelapor_id?: number | null
+          pelapor_nama?: string | null
+          status?: Database["public"]["Enums"]["status_laporan"]
+          tanggal_kejadian?: string
+          tindak_lanjut?: string | null
+          updated_at?: string | null
+          waktu_kejadian?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "laporan_aspek_id_fkey"
+            columns: ["aspek_id"]
+            isOneToOne: false
+            referencedRelation: "aspek_kehidupan"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "laporan_kecamatan_id_fkey"
+            columns: ["kecamatan_id"]
+            isOneToOne: false
+            referencedRelation: "kecamatan"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "laporan_kelurahan_id_fkey"
+            columns: ["kelurahan_id"]
+            isOneToOne: false
+            referencedRelation: "kelurahan"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "laporan_pelapor_id_fkey"
+            columns: ["pelapor_id"]
+            isOneToOne: false
+            referencedRelation: "ANGGOTA FKDM"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifikasi: {
+        Row: {
+          anggota_id: number | null
+          created_at: string | null
+          dibaca: boolean | null
+          id: string
+          judul: string
+          laporan_id: string | null
+          pesan: string
+        }
+        Insert: {
+          anggota_id?: number | null
+          created_at?: string | null
+          dibaca?: boolean | null
+          id?: string
+          judul: string
+          laporan_id?: string | null
+          pesan: string
+        }
+        Update: {
+          anggota_id?: number | null
+          created_at?: string | null
+          dibaca?: boolean | null
+          id?: string
+          judul?: string
+          laporan_id?: string | null
+          pesan?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifikasi_anggota_id_fkey"
+            columns: ["anggota_id"]
+            isOneToOne: false
+            referencedRelation: "ANGGOTA FKDM"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifikasi_laporan_id_fkey"
+            columns: ["laporan_id"]
+            isOneToOne: false
+            referencedRelation: "laporan"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -110,7 +333,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      jenis_athg: "Ancaman" | "Tantangan" | "Hambatan" | "Gangguan"
+      status_laporan: "Diterima" | "Diproses" | "Selesai" | "Ditolak"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -225,6 +449,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      jenis_athg: ["Ancaman", "Tantangan", "Hambatan", "Gangguan"],
+      status_laporan: ["Diterima", "Diproses", "Selesai", "Ditolak"],
+    },
   },
 } as const

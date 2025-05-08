@@ -53,7 +53,7 @@ const MobileMenu = ({ isMobileMenuOpen, setIsMobileMenuOpen, setIsLoginDialogOpe
           {isAuthenticated && userData && (
             <div className="flex items-center gap-3 py-3 border-b">
               <Avatar className="h-10 w-10 border border-fkdm-gold/30">
-                <AvatarImage src={userData.pasfoto_convert || ""} alt={userData.nama} />
+                <AvatarImage src={userData.pasfoto_url || ""} alt={userData.nama} />
                 <AvatarFallback className="bg-fkdm-red text-white">
                   {userData.nama.split(' ').map(name => name[0]).join('').substring(0, 2).toUpperCase()}
                 </AvatarFallback>
