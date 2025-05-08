@@ -21,7 +21,7 @@ export type Database = {
         }
         Insert: {
           Deskripsi: string
-          id?: number
+          id: number
           Jenis: string
           Kategori: string
           Lokasi: string

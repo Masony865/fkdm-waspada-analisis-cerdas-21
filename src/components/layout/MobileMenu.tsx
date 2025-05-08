@@ -1,8 +1,9 @@
 
 import { Link } from "react-router-dom";
-import { Home, BarChart, TextCursor, Database, LogIn } from "lucide-react";
+import { Home, BarChart, TextCursor, Database, LogIn, BellRing } from "lucide-react";
 import { useAuth } from "@/App";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 interface MobileMenuProps {
   isMobileMenuOpen: boolean;
@@ -34,6 +35,12 @@ const MobileMenu = ({ isMobileMenuOpen, setIsMobileMenuOpen, setIsLoginDialogOpe
       title: "Pengaturan",
       path: "/database-settings",
       icon: <Database className="w-5 h-5" />
+    },
+    {
+      title: "Notifikasi",
+      path: "/notifications",
+      icon: <BellRing className="w-5 h-5" />,
+      badge: true
     }
   ] : [
     {
@@ -69,11 +76,18 @@ const MobileMenu = ({ isMobileMenuOpen, setIsMobileMenuOpen, setIsLoginDialogOpe
             <Link 
               key={item.path} 
               to={item.path} 
-              className="flex items-center gap-2 py-2 text-lg font-medium" 
+              className="flex items-center justify-between py-2 text-lg font-medium" 
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              {item.icon}
-              <span>{item.title}</span>
+              <span className="flex items-center gap-2">
+                {item.icon}
+                <span>{item.title}</span>
+              </span>
+              {item.badge && (
+                <Badge variant="destructive" className="rounded-full px-2">
+                  2
+                </Badge>
+              )}
             </Link>
           ))}
           
