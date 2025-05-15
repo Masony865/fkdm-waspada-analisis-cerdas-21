@@ -5,9 +5,14 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Send } from "lucide-react";
+import { Send, Loader2 } from "lucide-react";
 import { useStore } from "zustand";
 import { chatOpen } from "@/stores/chatStore";
+import { useToast } from "@/hooks/use-toast";
+
+// OpenRouter API constants
+const OPENROUTER_API_KEY = "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";
+const OPENROUTER_PROVISIONING_KEY = "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";
 
 const ChatWidget = () => {
   const [input, setInput] = useState("");
@@ -15,29 +20,77 @@ const ChatWidget = () => {
   const isOpen = useStore(chatOpen, (state) => state.isOpen);
   const messages = useStore(chatOpen, (state) => state.messages);
   const addMessage = useStore(chatOpen, (state) => state.addMessage);
+  const isLoading = useStore(chatOpen, (state) => state.isLoading);
+  const setIsLoading = useStore(chatOpen, (state) => state.setIsLoading);
+  const { toast } = useToast();
+
+  const sendMessageToOpenRouter = async (userMessage: string) => {
+    try {
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+          "HTTP-Referer": window.location.origin,
+          "X-Title": "FKDM Waspada Kota Sukabumi",
+          "X-Provisioning-Key": OPENROUTER_PROVISIONING_KEY
+        },
+        body: JSON.stringify({
+          model: "anthropic/claude-3-haiku",
+          messages: [
+            {
+              role: "system",
+              content: "Anda adalah asisten AI FKDM Waspada Kota Sukabumi. Berikan jawaban yang singkat, jelas, dan tepat menggunakan bahasa Indonesia tentang data keamanan, laporan kejadian, dan analisis ATHG (Ancaman, Tantangan, Hambatan, Gangguan) di Kota Sukabumi. Fokus pada jawaban yang membantu petugas FKDM dalam pelaporan dan pengambilan keputusan."
+            },
+            ...messages.map(msg => ({
+              role: msg.role,
+              content: msg.content
+            })),
+            {
+              role: "user", 
+              content: userMessage
+            }
+          ],
+          temperature: 0.7,
+          max_tokens: 500,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || "Gagal menghubungi OpenRouter API");
+      }
+
+      const data = await response.json();
+      return data.choices[0].message.content;
+    } catch (error) {
+      console.error("Error calling OpenRouter:", error);
+      throw error;
+    }
+  };
 
   const handleSendMessage = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || isLoading) return;
 
     const userMessage = input;
     setInput("");
     addMessage("user", userMessage);
+    setIsLoading(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const responses = [
-        "Berdasarkan data terkini, terdeteksi potensi gangguan keamanan di sektor Pasar Pelita.",
-        "Analisis menunjukkan penurunan 15% dalam laporan konflik sosial bulan ini dibandingkan bulan lalu.",
-        "Data dari Kementerian Dalam Negeri menunjukkan peningkatan aktivitas yang perlu diperhatikan di wilayah perbatasan.",
-        "Berdasarkan pola historis, daerah tersebut memiliki potensi ancaman kategori sedang.",
-        "Rekomendasi: tingkatkan patroli di area-area rawan pada akhir pekan ini.",
-      ];
-
-      const randomResponse =
-        responses[Math.floor(Math.random() * responses.length)];
-      addMessage("assistant", randomResponse);
-    }, 1000);
+    try {
+      const aiResponse = await sendMessageToOpenRouter(userMessage);
+      addMessage("assistant", aiResponse);
+    } catch (error) {
+      console.error("Failed to get AI response:", error);
+      toast({
+        title: "Error",
+        description: "Gagal mendapatkan respons. Silakan coba lagi.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -104,6 +157,14 @@ const ChatWidget = () => {
                   </div>
                 </div>
               ))}
+              {isLoading && (
+                <div className="flex justify-start">
+                  <div className="rounded-lg px-4 py-2 bg-muted flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span className="text-sm">Memproses...</span>
+                  </div>
+                </div>
+              )}
               <div ref={messagesEndRef} />
             </div>
           )}
@@ -117,14 +178,19 @@ const ChatWidget = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             className="flex-1"
+            disabled={isLoading}
           />
           <Button
             type="submit"
             size="icon"
-            disabled={!input.trim()}
+            disabled={!input.trim() || isLoading}
             className="bg-fkdm-red hover:bg-red-700"
           >
-            <Send className="h-4 w-4" />
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
             <span className="sr-only">Kirim</span>
           </Button>
         </form>

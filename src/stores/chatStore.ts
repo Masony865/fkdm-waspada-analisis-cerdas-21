@@ -12,6 +12,8 @@ interface ChatState {
   }[];
   addMessage: (role: "user" | "assistant", content: string) => void;
   clearMessages: () => void;
+  isLoading: boolean;
+  setIsLoading: (loading: boolean) => void;
 }
 
 export const chatOpen = create<ChatState>((set) => ({
@@ -31,4 +33,6 @@ export const chatOpen = create<ChatState>((set) => ({
       ],
     })),
   clearMessages: () => set({ messages: [] }),
+  isLoading: false,
+  setIsLoading: (loading) => set({ isLoading: loading }),
 }));
