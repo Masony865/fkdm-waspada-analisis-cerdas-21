@@ -9,10 +9,22 @@ import { Send, Loader2 } from "lucide-react";
 import { useStore } from "zustand";
 import { chatOpen } from "@/stores/chatStore";
 import { useToast } from "@/hooks/use-toast";
+import OpenAI from "openai";
 
 // OpenRouter API constants
 const OPENROUTER_API_KEY = "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";
 const OPENROUTER_PROVISIONING_KEY = "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";
+
+// Initialize OpenRouter client with OpenAI client
+const openrouterClient = new OpenAI({
+  baseURL: "https://openrouter.ai/api/v1",
+  apiKey: OPENROUTER_API_KEY,
+  defaultHeaders: {
+    "HTTP-Referer": window.location.origin,
+    "X-Title": "FKDM Waspada Kota Sukabumi",
+    "X-Provisioning-Key": OPENROUTER_PROVISIONING_KEY
+  }
+});
 
 const ChatWidget = () => {
   const [input, setInput] = useState("");
@@ -24,57 +36,48 @@ const ChatWidget = () => {
   const setIsLoading = useStore(chatOpen, (state) => state.setIsLoading);
   const { toast } = useToast();
 
+  // Mock responses for fallback
+  const mockResponses = [
+    "Baik, saya akan membantu Anda menganalisis data laporan tersebut.",
+    "Berdasarkan data ATHG terbaru, tingkat kerawanan di wilayah tersebut masuk kategori waspada.",
+    "Laporan Anda telah dicatat. Tim akan segera menindaklanjuti situasi ini.",
+    "Analisis menunjukkan tren penurunan insiden sebesar 15% dibanding bulan sebelumnya.",
+    "Mohon berikan informasi lebih detail tentang lokasi dan waktu kejadian untuk analisis lebih lanjut."
+  ];
+
   const sendMessageToOpenRouter = async (userMessage: string) => {
     try {
-      // Create mock data for demo/fallback
-      const mockResponses = [
-        "Baik, saya akan membantu Anda menganalisis data laporan tersebut.",
-        "Berdasarkan data ATHG terbaru, tingkat kerawanan di wilayah tersebut masuk kategori waspada.",
-        "Laporan Anda telah dicatat. Tim akan segera menindaklanjuti situasi ini.",
-        "Analisis menunjukkan tren penurunan insiden sebesar 15% dibanding bulan sebelumnya.",
-        "Mohon berikan informasi lebih detail tentang lokasi dan waktu kejadian untuk analisis lebih lanjut."
-      ];
-
-      // Try connecting to OpenRouter API
+      // Try connecting to OpenRouter API using the OpenAI client
       try {
-        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-            "HTTP-Referer": window.location.origin,
-            "X-Title": "FKDM Waspada Kota Sukabumi",
-            "X-Provisioning-Key": OPENROUTER_PROVISIONING_KEY
+        // Convert message history to OpenAI format
+        const messageHistory = [
+          {
+            role: "system" as const,
+            content: "Anda adalah asisten AI FKDM Waspada Kota Sukabumi. Berikan jawaban yang singkat, jelas, dan tepat menggunakan bahasa Indonesia tentang data keamanan, laporan kejadian, dan analisis ATHG (Ancaman, Tantangan, Hambatan, Gangguan) di Kota Sukabumi. Fokus pada jawaban yang membantu petugas FKDM dalam pelaporan dan pengambilan keputusan."
           },
-          body: JSON.stringify({
-            model: "anthropic/claude-3-haiku",
-            messages: [
-              {
-                role: "system",
-                content: "Anda adalah asisten AI FKDM Waspada Kota Sukabumi. Berikan jawaban yang singkat, jelas, dan tepat menggunakan bahasa Indonesia tentang data keamanan, laporan kejadian, dan analisis ATHG (Ancaman, Tantangan, Hambatan, Gangguan) di Kota Sukabumi. Fokus pada jawaban yang membantu petugas FKDM dalam pelaporan dan pengambilan keputusan."
-              },
-              ...messages.map(msg => ({
-                role: msg.role,
-                content: msg.content
-              })),
-              {
-                role: "user", 
-                content: userMessage
-              }
-            ],
-            temperature: 0.7,
-            max_tokens: 500,
-          }),
+          ...messages.map(msg => ({
+            role: msg.role as "user" | "assistant",
+            content: msg.content
+          })),
+          {
+            role: "user" as const, 
+            content: userMessage
+          }
+        ];
+
+        // Call OpenRouter using the OpenAI client
+        const completion = await openrouterClient.chat.completions.create({
+          model: "anthropic/claude-3-haiku",
+          messages: messageHistory,
+          temperature: 0.7,
+          max_tokens: 500
         });
-
-        if (!response.ok) {
-          throw new Error("API response was not ok");
-        }
-
-        const data = await response.json();
-        return data.choices[0].message.content;
+        
+        // Return the assistant's message
+        return completion.choices[0].message.content;
       } catch (apiError) {
         console.error("OpenRouter API error:", apiError);
+        
         // Use mock response as fallback
         const randomIndex = Math.floor(Math.random() * mockResponses.length);
         console.log("Using fallback response due to API error");
