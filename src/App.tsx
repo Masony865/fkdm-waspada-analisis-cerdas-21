@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,7 +12,12 @@ import Dashboard from "./pages/Dashboard";
 import DataAnalisisPage from "./pages/DataAnalisisPage";
 import EditorPage from "./pages/EditorPage";
 import DatabaseSettingsPage from "./pages/DatabaseSettingsPage";
+import WilayahOperasiPage from "./pages/WilayahOperasiPage";
+import DetailKecamatanPage from "./pages/DetailKecamatanPage";
+import LoginAnggotaPage from "./pages/LoginAnggotaPage";
+import InputLaporanPage from "./pages/InputLaporanPage";
 import { supabase } from "./integrations/supabase/client";
+import { LocalStorageDB } from "./utils/localStorage";
 
 const queryClient = new QueryClient();
 
@@ -87,6 +93,11 @@ const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(initialAuthState.isAuthenticated);
   const [userData, setUserData] = useState<UserData | null>(initialAuthState.userData);
 
+  // Initialize localStorage database on app start
+  useEffect(() => {
+    LocalStorageDB.initializeData();
+  }, []);
+
   // Update localStorage when authentication state changes
   useEffect(() => {
     localStorage.setItem("fkdm_auth", JSON.stringify({ isAuthenticated, userData }));
@@ -142,6 +153,10 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/wilayah-operasi" element={<WilayahOperasiPage />} />
+              <Route path="/wilayah/:kecamatan" element={<DetailKecamatanPage />} />
+              <Route path="/wilayah/:kecamatan/login" element={<LoginAnggotaPage />} />
+              <Route path="/wilayah/:kecamatan/input-laporan" element={<InputLaporanPage />} />
               <Route
                 path="/dashboard"
                 element={

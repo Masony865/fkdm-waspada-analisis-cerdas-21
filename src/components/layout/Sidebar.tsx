@@ -1,6 +1,6 @@
 
 import { Link, useLocation } from "react-router-dom";
-import { Home, BarChart, TextCursor, Database, LogIn } from "lucide-react";
+import { Home, BarChart, TextCursor, Database, LogIn, MapPin } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/App";
@@ -21,6 +21,11 @@ const Sidebar = ({ setIsLoginDialogOpen }: SidebarProps) => {
       icon: <Home className="w-5 h-5" />
     }, 
     {
+      title: "Wilayah Operasi",
+      path: "/wilayah-operasi",
+      icon: <MapPin className="w-5 h-5" />
+    },
+    {
       title: "Analisis Data",
       path: "/analisis",
       icon: <BarChart className="w-5 h-5" />
@@ -40,6 +45,11 @@ const Sidebar = ({ setIsLoginDialogOpen }: SidebarProps) => {
       title: "Beranda",
       path: "/",
       icon: <Home className="w-5 h-5" />
+    },
+    {
+      title: "Wilayah Operasi",
+      path: "/wilayah-operasi",
+      icon: <MapPin className="w-5 h-5" />
     }
   ];
 
