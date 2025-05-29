@@ -1,14 +1,5 @@
 
-export interface KelurahanData {
-  nama: string;
-  kode: string;
-}
-
-export interface KecamatanData {
-  nama: string;
-  kode: string;
-  kelurahan: KelurahanData[];
-}
+import { KelurahanData, KecamatanData } from "@/types";
 
 export const WILAYAH_OPERASI: KecamatanData[] = [
   {

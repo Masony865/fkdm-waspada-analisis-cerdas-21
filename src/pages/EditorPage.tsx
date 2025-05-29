@@ -185,54 +185,17 @@ const EditorPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   
   // State for logged-in member signature
-  const [memberSignature, setMemberSignature] = useState<{
-    nama: string;
-    jabatan: string;
-    wilayah: string;
-    kecamatan: string;
-    kelurahan: string;
-  } | null>(null);
+  const [memberSignature, setMemberSignature] = useState(getMemberSignature());
 
   // Check for logged-in member on component mount
   useEffect(() => {
-    const loginData = localStorage.getItem('fkdm_anggota_login');
-    if (loginData) {
-      const anggota = JSON.parse(loginData);
-      // Check if login is still valid (within 24 hours)
-      const loginTime = new Date(anggota.loginTime);
-      const now = new Date();
-      const diffHours = (now.getTime() - loginTime.getTime()) / (1000 * 60 * 60);
-      
-      if (diffHours <= 24) {
-        setMemberSignature({
-          nama: anggota.nama,
-          jabatan: anggota.jabatan,
-          wilayah: anggota.wilayah,
-          kecamatan: anggota.kecamatan,
-          kelurahan: anggota.kelurahan
-        });
-      }
-    }
+    setMemberSignature(getMemberSignature());
   }, []);
 
   // Auto-add signature when content changes if member is logged in
   useEffect(() => {
     if (memberSignature && documentContent && !documentContent.includes("## Pembuat Laporan")) {
-      const signatureSection = `
-
-## Pembuat Laporan
-- **Nama**: ${memberSignature.nama}
-- **Jabatan**: ${memberSignature.jabatan}
-- **Wilayah**: ${memberSignature.kecamatan}, ${memberSignature.kelurahan}
-- **Tanggal**: ${new Date().toLocaleDateString('id-ID', {
-  year: 'numeric',
-  month: 'long', 
-  day: 'numeric'
-})}
-
----
-*Laporan ini dibuat secara otomatis dengan tanda tangan digital FKDM*`;
-
+      const signatureSection = generateSignatureSection(memberSignature);
       setDocumentContent(prev => prev + signatureSection);
     }
   }, [memberSignature, documentContent]);
@@ -251,20 +214,7 @@ const EditorPage = () => {
       
       // Auto-add member signature if logged in
       if (memberSignature) {
-        const signatureSection = `
-
-## Pembuat Laporan
-- **Nama**: ${memberSignature.nama}
-- **Jabatan**: ${memberSignature.jabatan}
-- **Wilayah**: ${memberSignature.kecamatan}, ${memberSignature.kelurahan}
-- **Tanggal**: ${new Date().toLocaleDateString('id-ID', {
-  year: 'numeric',
-  month: 'long', 
-  day: 'numeric'
-})}
-
----
-*Laporan ini dibuat secara otomatis dengan tanda tangan digital FKDM*`;
+        const signatureSection = generateSignatureSection(memberSignature);
         content += signatureSection;
       }
       

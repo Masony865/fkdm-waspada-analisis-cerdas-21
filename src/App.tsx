@@ -5,6 +5,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState, createContext, useContext, useEffect } from "react";
+import { AuthContextType, UserData } from "@/types";
+import { checkCredentialsWithSupabase, checkAdminCredentials } from "@/services/authService";
+import { LocalStorageDB } from "@/utils/localStorage";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
@@ -16,25 +19,8 @@ import WilayahOperasiPage from "./pages/WilayahOperasiPage";
 import DetailKecamatanPage from "./pages/DetailKecamatanPage";
 import LoginAnggotaPage from "./pages/LoginAnggotaPage";
 import InputLaporanPage from "./pages/InputLaporanPage";
-import { supabase } from "./integrations/supabase/client";
-import { LocalStorageDB } from "./utils/localStorage";
 
 const queryClient = new QueryClient();
-
-interface UserData {
-  id: string;
-  nama: string;
-  jabatan: string;
-  wilayah: string;
-  pasfoto_url?: string;
-}
-
-interface AuthContextType {
-  isAuthenticated: boolean;
-  userData: UserData | null;
-  login: (nik: string, nama: string) => Promise<boolean>;
-  logout: () => void;
-}
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -46,65 +32,23 @@ export function useAuth() {
   return context;
 }
 
-// Function to check credentials against ANGGOTA FKDM table in Supabase
-const checkCredentialsWithSupabase = async (nik: string, nama: string): Promise<UserData | null> => {
-  try {
-    console.log("Checking credentials for NIK:", nik, "and NAMA:", nama);
-    
-    // Query ANGGOTA FKDM table to find a matching member
-    const { data, error } = await supabase
-      .from("ANGGOTA FKDM")
-      .select("id, NIK, NAMA, JABATAN, WILAYAH, PASFOTO")
-      .eq("NIK", nik)
-      .eq("NAMA", nama)
-      .maybeSingle();
-    
-    if (error) {
-      console.error("Supabase query error:", error);
-      return null;
-    }
-    
-    if (!data) {
-      console.log("No matching FKDM member found");
-      return null;
-    }
-
-    console.log("Found matching FKDM member:", data);
-    
-    // Return user data from ANGGOTA FKDM table
-    return {
-      id: String(data.id),
-      nama: data.NAMA || "",
-      jabatan: data.JABATAN || "",
-      wilayah: data.WILAYAH || "",
-      pasfoto_url: data.PASFOTO || ""
-    };
-  } catch (error) {
-    console.error("Error checking credentials:", error);
-    return null;
-  }
-};
-
 const App = () => {
-  // Check if there's a stored auth state in localStorage
   const storedAuth = localStorage.getItem("fkdm_auth");
   const initialAuthState = storedAuth ? JSON.parse(storedAuth) : { isAuthenticated: false, userData: null };
   
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(initialAuthState.isAuthenticated);
   const [userData, setUserData] = useState<UserData | null>(initialAuthState.userData);
 
-  // Initialize localStorage database on app start
   useEffect(() => {
     LocalStorageDB.initializeData();
   }, []);
 
-  // Update localStorage when authentication state changes
   useEffect(() => {
     localStorage.setItem("fkdm_auth", JSON.stringify({ isAuthenticated, userData }));
   }, [isAuthenticated, userData]);
 
-  const login = async (nik: string, nama: string) => {
-    // Check credentials against "ANGGOTA FKDM" table in Supabase
+  const login = async (nik: string, nama: string): Promise<boolean> => {
+    // Check credentials against Supabase
     const user = await checkCredentialsWithSupabase(nik, nama);
     
     if (user) {
@@ -113,15 +57,9 @@ const App = () => {
       return true;
     }
     
-    // If no user found in ANGGOTA FKDM table, check for admin login
-    if (nik.toLowerCase() === "admin" && nama === "admin123") {
-      const adminUser = {
-        id: "admin",
-        nama: "Admin FKDM",
-        jabatan: "Administrator",
-        wilayah: "Kota Sukabumi",
-        pasfoto_url: "https://i.pravatar.cc/150?img=8"
-      };
+    // Check admin credentials
+    const adminUser = checkAdminCredentials(nik, nama);
+    if (adminUser) {
       setIsAuthenticated(true);
       setUserData(adminUser);
       return true;
@@ -136,11 +74,15 @@ const App = () => {
     localStorage.removeItem("fkdm_auth");
   };
 
-  const authContext = {
+  const authContext: AuthContextType = {
     isAuthenticated,
     userData,
     login,
     logout,
+  };
+
+  const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+    return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
   };
 
   return (
@@ -157,46 +99,10 @@ const App = () => {
               <Route path="/wilayah/:kecamatan" element={<DetailKecamatanPage />} />
               <Route path="/wilayah/:kecamatan/login" element={<LoginAnggotaPage />} />
               <Route path="/wilayah/:kecamatan/input-laporan" element={<InputLaporanPage />} />
-              <Route
-                path="/dashboard"
-                element={
-                  isAuthenticated ? (
-                    <Dashboard />
-                  ) : (
-                    <Navigate to="/login" replace />
-                  )
-                }
-              />
-              <Route
-                path="/analisis"
-                element={
-                  isAuthenticated ? (
-                    <DataAnalisisPage />
-                  ) : (
-                    <Navigate to="/login" replace />
-                  )
-                }
-              />
-              <Route
-                path="/editor"
-                element={
-                  isAuthenticated ? (
-                    <EditorPage />
-                  ) : (
-                    <Navigate to="/login" replace />
-                  )
-                }
-              />
-              <Route
-                path="/database-settings"
-                element={
-                  isAuthenticated ? (
-                    <DatabaseSettingsPage />
-                  ) : (
-                    <Navigate to="/login" replace />
-                  )
-                }
-              />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/analisis" element={<ProtectedRoute><DataAnalisisPage /></ProtectedRoute>} />
+              <Route path="/editor" element={<ProtectedRoute><EditorPage /></ProtectedRoute>} />
+              <Route path="/database-settings" element={<ProtectedRoute><DatabaseSettingsPage /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </TooltipProvider>
