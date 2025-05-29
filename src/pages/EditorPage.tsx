@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,6 +36,8 @@ import {
   Table,
   Trash2,
   Search,
+  User,
+  MapPin,
 } from "lucide-react";
 
 // Sample template data
@@ -182,6 +183,59 @@ const EditorPage = () => {
   const [documentTitle, setDocumentTitle] = useState("");
   const [documentContent, setDocumentContent] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  
+  // State for logged-in member signature
+  const [memberSignature, setMemberSignature] = useState<{
+    nama: string;
+    jabatan: string;
+    wilayah: string;
+    kecamatan: string;
+    kelurahan: string;
+  } | null>(null);
+
+  // Check for logged-in member on component mount
+  useEffect(() => {
+    const loginData = localStorage.getItem('fkdm_anggota_login');
+    if (loginData) {
+      const anggota = JSON.parse(loginData);
+      // Check if login is still valid (within 24 hours)
+      const loginTime = new Date(anggota.loginTime);
+      const now = new Date();
+      const diffHours = (now.getTime() - loginTime.getTime()) / (1000 * 60 * 60);
+      
+      if (diffHours <= 24) {
+        setMemberSignature({
+          nama: anggota.nama,
+          jabatan: anggota.jabatan,
+          wilayah: anggota.wilayah,
+          kecamatan: anggota.kecamatan,
+          kelurahan: anggota.kelurahan
+        });
+      }
+    }
+  }, []);
+
+  // Auto-add signature when content changes if member is logged in
+  useEffect(() => {
+    if (memberSignature && documentContent && !documentContent.includes("## Pembuat Laporan")) {
+      const signatureSection = `
+
+## Pembuat Laporan
+- **Nama**: ${memberSignature.nama}
+- **Jabatan**: ${memberSignature.jabatan}
+- **Wilayah**: ${memberSignature.kecamatan}, ${memberSignature.kelurahan}
+- **Tanggal**: ${new Date().toLocaleDateString('id-ID', {
+  year: 'numeric',
+  month: 'long', 
+  day: 'numeric'
+})}
+
+---
+*Laporan ini dibuat secara otomatis dengan tanda tangan digital FKDM*`;
+
+      setDocumentContent(prev => prev + signatureSection);
+    }
+  }, [memberSignature, documentContent]);
 
   // Filter documents based on search
   const filteredDocuments = savedDocuments.filter((doc) =>
@@ -193,7 +247,28 @@ const EditorPage = () => {
     const template = templates.find((t) => t.id === templateId);
     if (template) {
       setSelectedTemplate(templateId);
-      setDocumentContent(template.content);
+      let content = template.content;
+      
+      // Auto-add member signature if logged in
+      if (memberSignature) {
+        const signatureSection = `
+
+## Pembuat Laporan
+- **Nama**: ${memberSignature.nama}
+- **Jabatan**: ${memberSignature.jabatan}
+- **Wilayah**: ${memberSignature.kecamatan}, ${memberSignature.kelurahan}
+- **Tanggal**: ${new Date().toLocaleDateString('id-ID', {
+  year: 'numeric',
+  month: 'long', 
+  day: 'numeric'
+})}
+
+---
+*Laporan ini dibuat secara otomatis dengan tanda tangan digital FKDM*`;
+        content += signatureSection;
+      }
+      
+      setDocumentContent(content);
       setDocumentTitle(`Baru: ${template.name}`);
     }
   };
@@ -211,7 +286,7 @@ const EditorPage = () => {
     // Normally, this would save to a database
     toast({
       title: "Dokumen Tersimpan",
-      description: `"${documentTitle}" telah berhasil disimpan`,
+      description: `"${documentTitle}" telah berhasil disimpan dengan tanda tangan digital`,
     });
   };
 
@@ -225,6 +300,23 @@ const EditorPage = () => {
 
   return (
     <AppLayout title="Editor Laporan">
+      {/* Member signature indicator */}
+      {memberSignature && (
+        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+          <div className="flex items-center gap-2 text-green-700">
+            <User className="h-4 w-4" />
+            <span className="font-medium">Tanda Tangan Otomatis Aktif</span>
+          </div>
+          <div className="mt-1 text-sm text-green-600 flex items-center gap-4">
+            <span>{memberSignature.nama} - {memberSignature.jabatan}</span>
+            <span className="flex items-center gap-1">
+              <MapPin className="h-3 w-3" />
+              {memberSignature.kecamatan}, {memberSignature.kelurahan}
+            </span>
+          </div>
+        </div>
+      )}
+
       <Tabs defaultValue="editor">
         <TabsList className="mb-4">
           <TabsTrigger value="editor">Editor Laporan</TabsTrigger>
@@ -241,6 +333,11 @@ const EditorPage = () => {
                     <CardTitle>Editor Laporan</CardTitle>
                     <CardDescription>
                       Buat dan edit laporan struktural dengan mudah
+                      {memberSignature && (
+                        <span className="block text-green-600 text-sm mt-1">
+                          ✓ Tanda tangan akan ditambahkan otomatis
+                        </span>
+                      )}
                     </CardDescription>
                   </div>
                   <div className="flex gap-2">
@@ -353,6 +450,11 @@ const EditorPage = () => {
               <CardFooter className="flex justify-between border-t p-4">
                 <div className="text-sm text-muted-foreground">
                   Terakhir diperbarui: {new Date().toLocaleString("id-ID")}
+                  {memberSignature && (
+                    <span className="block text-green-600">
+                      Pembuat: {memberSignature.nama}
+                    </span>
+                  )}
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm">
