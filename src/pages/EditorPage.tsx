@@ -1,44 +1,12 @@
+
 import { useState, useEffect } from "react";
 import AppLayout from "@/components/layout/AppLayout";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
-import {
-  Bold,
-  Italic,
-  Underline,
-  List,
-  ListOrdered,
-  Save,
-  Upload,
-  Download,
-  FileText,
-  Image,
-  Plus,
-  Table,
-  Trash2,
-  Search,
-  User,
-  MapPin,
-} from "lucide-react";
+import { getMemberSignature } from "@/utils/memberSignature";
+import MemberSignatureIndicator from "@/components/editor/MemberSignatureIndicator";
+import DocumentEditor from "@/components/editor/DocumentEditor";
+import SavedDocuments from "@/components/editor/SavedDocuments";
+import TemplateSelector from "@/components/editor/TemplateSelector";
 
 // Sample template data
 const templates = [
@@ -178,12 +146,6 @@ const savedDocuments = [
 ];
 
 const EditorPage = () => {
-  const { toast } = useToast();
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
-  const [documentTitle, setDocumentTitle] = useState("");
-  const [documentContent, setDocumentContent] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  
   // State for logged-in member signature
   const [memberSignature, setMemberSignature] = useState(getMemberSignature());
 
@@ -192,80 +154,13 @@ const EditorPage = () => {
     setMemberSignature(getMemberSignature());
   }, []);
 
-  // Auto-add signature when content changes if member is logged in
-  useEffect(() => {
-    if (memberSignature && documentContent && !documentContent.includes("## Pembuat Laporan")) {
-      const signatureSection = generateSignatureSection(memberSignature);
-      setDocumentContent(prev => prev + signatureSection);
-    }
-  }, [memberSignature, documentContent]);
-
-  // Filter documents based on search
-  const filteredDocuments = savedDocuments.filter((doc) =>
-    doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    doc.template.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   const handleTemplateSelect = (templateId: string) => {
-    const template = templates.find((t) => t.id === templateId);
-    if (template) {
-      setSelectedTemplate(templateId);
-      let content = template.content;
-      
-      // Auto-add member signature if logged in
-      if (memberSignature) {
-        const signatureSection = generateSignatureSection(memberSignature);
-        content += signatureSection;
-      }
-      
-      setDocumentContent(content);
-      setDocumentTitle(`Baru: ${template.name}`);
-    }
-  };
-
-  const handleSaveDocument = () => {
-    if (!documentTitle.trim()) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Judul dokumen tidak boleh kosong",
-      });
-      return;
-    }
-
-    // Normally, this would save to a database
-    toast({
-      title: "Dokumen Tersimpan",
-      description: `"${documentTitle}" telah berhasil disimpan dengan tanda tangan digital`,
-    });
-  };
-
-  const formatText = (format: string) => {
-    // This would normally implement formatting in a real editor
-    toast({
-      title: "Format Teks",
-      description: `Teks diformat dengan: ${format}`,
-    });
+    console.log("Template selected:", templateId);
   };
 
   return (
     <AppLayout title="Editor Laporan">
-      {/* Member signature indicator */}
-      {memberSignature && (
-        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-          <div className="flex items-center gap-2 text-green-700">
-            <User className="h-4 w-4" />
-            <span className="font-medium">Tanda Tangan Otomatis Aktif</span>
-          </div>
-          <div className="mt-1 text-sm text-green-600 flex items-center gap-4">
-            <span>{memberSignature.nama} - {memberSignature.jabatan}</span>
-            <span className="flex items-center gap-1">
-              <MapPin className="h-3 w-3" />
-              {memberSignature.kecamatan}, {memberSignature.kelurahan}
-            </span>
-          </div>
-        </div>
-      )}
+      <MemberSignatureIndicator memberSignature={memberSignature} />
 
       <Tabs defaultValue="editor">
         <TabsList className="mb-4">
@@ -276,255 +171,23 @@ const EditorPage = () => {
 
         <TabsContent value="editor">
           <div className="grid gap-6">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Editor Laporan</CardTitle>
-                    <CardDescription>
-                      Buat dan edit laporan struktural dengan mudah
-                      {memberSignature && (
-                        <span className="block text-green-600 text-sm mt-1">
-                          ✓ Tanda tangan akan ditambahkan otomatis
-                        </span>
-                      )}
-                    </CardDescription>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
-                      <FileText className="h-4 w-4 mr-1" /> Pratinjau
-                    </Button>
-                    <Button
-                      variant="default"
-                      size="sm"
-                      onClick={handleSaveDocument}
-                    >
-                      <Save className="h-4 w-4 mr-1" /> Simpan
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="title">Judul Dokumen</Label>
-                      <Input
-                        id="title"
-                        placeholder="Masukkan judul dokumen"
-                        value={documentTitle}
-                        onChange={(e) => setDocumentTitle(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="template">Template</Label>
-                      <Select
-                        value={selectedTemplate || ""}
-                        onValueChange={handleTemplateSelect}
-                      >
-                        <SelectTrigger id="template">
-                          <SelectValue placeholder="Pilih template" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {templates.map((template) => (
-                            <SelectItem key={template.id} value={template.id}>
-                              {template.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="bg-muted p-2 rounded-t-md flex flex-wrap gap-2 border border-b-0">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => formatText("bold")}
-                      >
-                        <Bold className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => formatText("italic")}
-                      >
-                        <Italic className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => formatText("underline")}
-                      >
-                        <Underline className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => formatText("bulleted-list")}
-                      >
-                        <List className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => formatText("numbered-list")}
-                      >
-                        <ListOrdered className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => formatText("table")}
-                      >
-                        <Table className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => formatText("image")}
-                      >
-                        <Image className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <Textarea
-                      className="min-h-[500px] font-mono rounded-t-none"
-                      value={documentContent}
-                      onChange={(e) => setDocumentContent(e.target.value)}
-                      placeholder="Mulai menulis konten dokumen Anda di sini..."
-                    />
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-between border-t p-4">
-                <div className="text-sm text-muted-foreground">
-                  Terakhir diperbarui: {new Date().toLocaleString("id-ID")}
-                  {memberSignature && (
-                    <span className="block text-green-600">
-                      Pembuat: {memberSignature.nama}
-                    </span>
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm">
-                    <Upload className="h-4 w-4 mr-1" /> Unggah
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <Download className="h-4 w-4 mr-1" /> Unduh
-                  </Button>
-                </div>
-              </CardFooter>
-            </Card>
+            <DocumentEditor 
+              templates={templates}
+              memberSignature={memberSignature}
+              onTemplateSelect={handleTemplateSelect}
+            />
           </div>
         </TabsContent>
 
         <TabsContent value="saved">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Dokumen Tersimpan</CardTitle>
-                <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type="search"
-                      placeholder="Cari dokumen..."
-                      className="pl-8 w-[200px]"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                  </div>
-                  <Button size="sm">
-                    <Plus className="h-4 w-4 mr-1" /> Dokumen Baru
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">
-                        Judul
-                      </th>
-                      <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">
-                        Template
-                      </th>
-                      <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">
-                        Terakhir Diubah
-                      </th>
-                      <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">
-                        Penulis
-                      </th>
-                      <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">
-                        Aksi
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredDocuments.map((doc) => (
-                      <tr key={doc.id} className="border-b hover:bg-muted/50">
-                        <td className="px-4 py-3">{doc.title}</td>
-                        <td className="px-4 py-3">{doc.template}</td>
-                        <td className="px-4 py-3">{doc.lastModified}</td>
-                        <td className="px-4 py-3">{doc.author}</td>
-                        <td className="px-4 py-3 text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button variant="ghost" size="icon">
-                              <FileText className="h-4 w-4" />
-                              <span className="sr-only">Edit</span>
-                            </Button>
-                            <Button variant="ghost" size="icon">
-                              <Download className="h-4 w-4" />
-                              <span className="sr-only">Download</span>
-                            </Button>
-                            <Button variant="ghost" size="icon">
-                              <Trash2 className="h-4 w-4 text-red-500" />
-                              <span className="sr-only">Delete</span>
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {filteredDocuments.length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    Tidak ada dokumen yang ditemukan
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          <SavedDocuments documents={savedDocuments} />
         </TabsContent>
 
         <TabsContent value="templates">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {templates.map((template) => (
-              <Card key={template.id}>
-                <CardHeader>
-                  <CardTitle>{template.name}</CardTitle>
-                  <CardDescription>{template.category}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground text-sm">
-                    {template.description}
-                  </p>
-                </CardContent>
-                <CardFooter className="flex justify-end">
-                  <Button
-                    onClick={() => handleTemplateSelect(template.id)}
-                    variant="outline"
-                  >
-                    <FileText className="h-4 w-4 mr-2" />
-                    Gunakan Template
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
+          <TemplateSelector 
+            templates={templates}
+            onTemplateSelect={handleTemplateSelect}
+          />
         </TabsContent>
       </Tabs>
     </AppLayout>
