@@ -1,5 +1,4 @@
-
-import { LaporanData, AnggotaData } from "@/types";
+import { LaporanData, AnggotaData, ASPEK_KEHIDUPAN } from "@/types";
 import { WILAYAH_OPERASI } from "@/data/wilayahOperasi";
 
 const JENIS_KEJADIAN = [
@@ -24,13 +23,15 @@ export const generateSampleData = (): { laporan: LaporanData[], anggota: Anggota
         const date = new Date();
         date.setDate(date.getDate() - Math.floor(Math.random() * 30));
         
+        const selectedAspek = ASPEK_KEHIDUPAN[Math.floor(Math.random() * ASPEK_KEHIDUPAN.length)];
+        
         laporan.push({
           id: `LP${reportId.toString().padStart(4, '0')}`,
           tanggal: date.toISOString().split('T')[0],
           kecamatan: kec.nama,
           kelurahan: kel.nama,
-          jenis_kejadian: JENIS_KEJADIAN[Math.floor(Math.random() * JENIS_KEJADIAN.length)],
-          deskripsi: `Laporan ${JENIS_KEJADIAN[Math.floor(Math.random() * JENIS_KEJADIAN.length)]} di ${kel.nama}, ${kec.nama}`,
+          aspek_kehidupan: selectedAspek,
+          deskripsi: `Laporan terkait ${selectedAspek} di ${kel.nama}, ${kec.nama}`,
           tingkat_bahaya: TINGKAT_BAHAYA[Math.floor(Math.random() * TINGKAT_BAHAYA.length)],
           status: STATUS[Math.floor(Math.random() * STATUS.length)],
           pelapor: `Anggota ${kec.nama} ${i + 1}`,

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,7 +28,7 @@ import {
 } from "recharts";
 import { Search, Download, Filter } from "lucide-react";
 
-// Dummy data for charts
+// Updated data for charts using new aspek kehidupan
 const incidentData = [
   {
     tahun: 2021,
@@ -82,14 +81,19 @@ const incidentData = [
 ];
 
 const categoryData = [
-  { name: "Politik", value: 35 },
-  { name: "Ekonomi", value: 25 },
-  { name: "Sosial Budaya", value: 20 },
-  { name: "Keamanan", value: 15 },
-  { name: "Lingkungan", value: 5 },
+  { name: "Politik", value: 20 },
+  { name: "Ekonomi", value: 18 },
+  { name: "Sosial", value: 15 },
+  { name: "Keamanan", value: 12 },
+  { name: "Pendidikan", value: 10 },
+  { name: "Lingkungan Hidup", value: 8 },
+  { name: "Kesehatan", value: 7 },
+  { name: "Teknologi & Informasi", value: 5 },
+  { name: "Transportasi & Infrastruktur", value: 3 },
+  { name: "Budaya", value: 2 },
 ];
 
-const COLORS = ["#E30613", "#D4AF37", "#009846", "#0088FE", "#FF8042"];
+const COLORS = ["#E30613", "#D4AF37", "#009846", "#0088FE", "#FF8042", "#8884D8", "#82CA9D", "#FFC658", "#FF7C7C", "#8DD1E1"];
 
 const locationData = [
   { name: "Cikole", value: 30 },
@@ -113,7 +117,7 @@ const tableData = [
     id: 2,
     tanggal: "10-05-2025",
     jenis: "Gangguan",
-    kategori: "Sosial Budaya",
+    kategori: "Sosial",
     lokasi: "Kecamatan Citamiang",
     deskripsi: "Kebisingan kegiatan pada malam hari",
     status: "Ditangani",
@@ -131,7 +135,7 @@ const tableData = [
     id: 4,
     tanggal: "05-05-2025",
     jenis: "Hambatan",
-    kategori: "Lingkungan",
+    kategori: "Lingkungan Hidup",
     lokasi: "Kecamatan Warudoyong",
     deskripsi: "Peningkatan sampah di aliran sungai",
     status: "Ditangani",
@@ -147,19 +151,21 @@ const tableData = [
   },
 ];
 
-// AI-generated analysis for the data
+// Updated AI analysis text
 const aiAnalysis = `
-Berdasarkan data yang terkumpul, terdapat beberapa pola dan insight yang perlu diperhatikan:
+Berdasarkan data aspek kehidupan yang terkumpul, terdapat beberapa pola dan insight yang perlu diperhatikan:
 
-1. Tren Ancaman dan Tantangan: Menunjukkan peningkatan signifikan sebesar 15% pada bulan Mei dibandingkan bulan April, terutama di kategori politik dan sosial budaya. Hal ini kemungkinan berkaitan dengan momentum menjelang kegiatan pemilihan RT/RW di beberapa kelurahan.
+1. Dominasi Aspek Politik dan Ekonomi: Data menunjukkan bahwa aspek politik (20%) dan ekonomi (18%) mendominasi laporan, mengindikasikan tingginya dinamika sosial-ekonomi di wilayah operasi FKDM.
 
-2. Distribusi Geografis: Kecamatan Cikole dan Gunungpuyuh memiliki intensitas kejadian tertinggi, masing-masing 30% dan 25% dari total laporan. Rekomendasi: tingkatkan koordinasi dengan petugas di wilayah tersebut.
+2. Aspek Sosial dan Keamanan: Aspek sosial (15%) dan keamanan (12%) juga menunjukkan persentase signifikan, memerlukan perhatian khusus dalam koordinasi dengan pihak terkait.
 
-3. Kategori Dominan: Isu politik dan ekonomi menjadi dominan dengan total 60% dari seluruh laporan. Perlu dilakukan monitoring khusus terhadap forum-forum diskusi masyarakat terkait kedua isu tersebut.
+3. Emerging Issues: Aspek teknologi & informasi (5%) mulai muncul sebagai isu baru yang perlu diantisipasi, terutama terkait literasi digital masyarakat.
 
-4. Prognosis: Berdasarkan pola historis, diperkirakan akan terjadi penurunan kasus pada bulan Juli mendatang, namun tetap perlu kewaspadaan tinggi di wilayah Cikole.
+4. Tren Geografis: Kecamatan Cikole dan Gunungpuyuh tetap menjadi wilayah dengan intensitas kejadian tertinggi, memerlukan penguatan kapasitas anggota di wilayah tersebut.
 
-5. Rekomendasi Tindak Lanjut: Perlunya koordinasi lintas sektor, terutama dengan kepolisian dan tokoh masyarakat untuk antisipasi potensi konflik politik dan ekonomi.
+5. Rekomendasi Strategis: Diperlukan pendekatan komprehensif yang melibatkan berbagai aspek kehidupan, tidak hanya fokus pada keamanan tradisional tetapi juga aspek pembangunan berkelanjutan.
+
+6. Monitoring Khusus: Aspek pendidikan (10%) dan kesehatan (7%) memerlukan monitoring berkelanjutan mengingat dampak jangka panjangnya terhadap stabilitas sosial.
 `;
 
 const DataAnalisisPage = () => {
@@ -282,7 +288,7 @@ const DataAnalisisPage = () => {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Distribusi Kategori</CardTitle>
+                  <CardTitle>Distribusi Aspek Kehidupan</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={350}>

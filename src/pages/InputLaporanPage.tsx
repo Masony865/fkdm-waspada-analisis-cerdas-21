@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { CalendarIcon, MapPin, AlertTriangle, Send, LogOut } from "lucide-react";
 import { getKecamatanByNama } from "@/data/wilayahOperasi";
 import { LocalStorageDB, LaporanData } from "@/utils/localStorage";
+import { ASPEK_KEHIDUPAN } from "@/types";
 import { Link } from "react-router-dom";
 
 const InputLaporanPage = () => {
@@ -22,7 +22,7 @@ const InputLaporanPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     tanggal: new Date().toISOString().split('T')[0],
-    jenis_kejadian: "",
+    aspek_kehidupan: "",
     deskripsi: "",
     tingkat_bahaya: "" as LaporanData['tingkat_bahaya'] | "",
     koordinat_lat: "",
@@ -32,22 +32,6 @@ const InputLaporanPage = () => {
   const kecamatanData = getKecamatanByNama(
     kecamatan?.charAt(0).toUpperCase() + kecamatan?.slice(1) || ""
   );
-
-  const jenisKejadian = [
-    'Bencana Alam',
-    'Kebakaran', 
-    'Kecelakaan Lalu Lintas',
-    'Gangguan Keamanan',
-    'Banjir',
-    'Longsor',
-    'Kerusuhan',
-    'Pencurian',
-    'Vandalisme',
-    'Gangguan Listrik',
-    'Gangguan Air Bersih',
-    'Kecelakaan Kerja',
-    'Lainnya'
-  ];
 
   useEffect(() => {
     // Cek apakah anggota sudah login
@@ -80,7 +64,7 @@ const InputLaporanPage = () => {
         tanggal: formData.tanggal,
         kecamatan: anggotaLogin.kecamatan,
         kelurahan: anggotaLogin.kelurahan,
-        jenis_kejadian: formData.jenis_kejadian,
+        aspek_kehidupan: formData.aspek_kehidupan,
         deskripsi: formData.deskripsi,
         tingkat_bahaya: formData.tingkat_bahaya as LaporanData['tingkat_bahaya'],
         status: 'Pending' as const,
@@ -101,7 +85,7 @@ const InputLaporanPage = () => {
       // Reset form
       setFormData({
         tanggal: new Date().toISOString().split('T')[0],
-        jenis_kejadian: "",
+        aspek_kehidupan: "",
         deskripsi: "",
         tingkat_bahaya: "",
         koordinat_lat: "",
@@ -199,19 +183,19 @@ const InputLaporanPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="jenis_kejadian">Jenis Kejadian</Label>
+                  <Label htmlFor="aspek_kehidupan">Aspek Kehidupan</Label>
                   <Select 
-                    value={formData.jenis_kejadian} 
-                    onValueChange={(value) => setFormData({...formData, jenis_kejadian: value})}
+                    value={formData.aspek_kehidupan} 
+                    onValueChange={(value) => setFormData({...formData, aspek_kehidupan: value})}
                     required
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Pilih jenis kejadian" />
+                      <SelectValue placeholder="Pilih aspek kehidupan" />
                     </SelectTrigger>
                     <SelectContent>
-                      {jenisKejadian.map((jenis) => (
-                        <SelectItem key={jenis} value={jenis}>
-                          {jenis}
+                      {ASPEK_KEHIDUPAN.map((aspek) => (
+                        <SelectItem key={aspek} value={aspek}>
+                          {aspek}
                         </SelectItem>
                       ))}
                     </SelectContent>

@@ -1,10 +1,9 @@
-
 export interface LaporanData {
   id: string;
   tanggal: string;
   kecamatan: string;
   kelurahan: string;
-  jenis_kejadian: string;
+  aspek_kehidupan: string;
   deskripsi: string;
   tingkat_bahaya: 'Rendah' | 'Sedang' | 'Tinggi' | 'Sangat Tinggi';
   status: 'Pending' | 'Diproses' | 'Selesai';
@@ -63,3 +62,27 @@ export interface KecamatanData {
   kode: string;
   kelurahan: KelurahanData[];
 }
+
+export const ASPEK_KEHIDUPAN = [
+  'Politik',
+  'Sosial', 
+  'Budaya',
+  'Keamanan',
+  'Pendidikan',
+  'Ekonomi',
+  'Hukum',
+  'Teknologi & Informasi',
+  'Lingkungan Hidup',
+  'Kesehatan',
+  'Pertahanan & Siber',
+  'Demografi & Kependudukan',
+  'Transportasi & Infrastruktur',
+  'Energi & SDA',
+  'Agama & Kepercayaan',
+  'Pertanian & Ketahanan Pangan',
+  'Pariwisata',
+  'Industri & Ketenagakerjaan',
+  'Inovasi & Riset'
+] as const;
+
+export type AspekKehidupan = typeof ASPEK_KEHIDUPAN[number];
