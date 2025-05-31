@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,6 +18,7 @@ import WilayahOperasiPage from "./pages/WilayahOperasiPage";
 import DetailKecamatanPage from "./pages/DetailKecamatanPage";
 import LoginAnggotaPage from "./pages/LoginAnggotaPage";
 import InputLaporanPage from "./pages/InputLaporanPage";
+import AnalisisBarosPage from "./pages/AnalisisBarosPage";
 
 const queryClient = new QueryClient();
 
@@ -99,6 +99,7 @@ const App = () => {
               <Route path="/wilayah/:kecamatan" element={<DetailKecamatanPage />} />
               <Route path="/wilayah/:kecamatan/login" element={<LoginAnggotaPage />} />
               <Route path="/wilayah/:kecamatan/input-laporan" element={<InputLaporanPage />} />
+              <Route path="/analisis-baros" element={<AnalisisBarosPage />} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/analisis" element={<ProtectedRoute><DataAnalisisPage /></ProtectedRoute>} />
               <Route path="/editor" element={<ProtectedRoute><EditorPage /></ProtectedRoute>} />
