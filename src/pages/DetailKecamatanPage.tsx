@@ -230,7 +230,7 @@ const DetailKecamatanPage = () => {
                             {laporan.tingkat_bahaya}
                           </Badge>
                         </div>
-                        <h3 className="font-medium">{laporan.jenis_kejadian}</h3>
+                        <h3 className="font-medium">{laporan.aspek_kehidupan}</h3>
                         <p className="text-sm text-muted-foreground">{laporan.deskripsi}</p>
                         <div className="flex items-center gap-4 text-xs text-muted-foreground">
                           <span className="flex items-center gap-1">
