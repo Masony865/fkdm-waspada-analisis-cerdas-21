@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -140,7 +139,7 @@ const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
           
           {showDemoData && (
             <div className="bg-blue-50 p-4 rounded-lg max-h-40 overflow-y-auto">
-              <h4 className="font-semibold text-blue-900 mb-2">Data Demo Anggota:</h4>
+              <h4 className="font-semibold text-blue-900 mb-2">Data Anggota:</h4>
               <div className="space-y-2 text-sm">
                 {demoData.map((anggota) => (
                   <div key={anggota.id} className="border-b border-blue-200 pb-1">
@@ -167,10 +166,8 @@ const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
 
         <div className="bg-yellow-50 p-3 rounded-lg text-sm">
           <p className="text-yellow-800">
-            <strong>Demo Login:</strong><br/>
             NIK: 3272062407740899<br/>
             Nama: SYAFRIL SANI<br/><br/>
-            <strong>Admin:</strong><br/>
             NIK: admin<br/>
             Nama: admin123
           </p>
