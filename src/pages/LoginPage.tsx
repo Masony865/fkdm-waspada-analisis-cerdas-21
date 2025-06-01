@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -168,15 +169,6 @@ const LoginPage = () => {
             </p>
           </CardFooter>
         </Card>
-
-        <div className="mt-4 bg-yellow-50 p-4 rounded-lg">
-          <p className="text-sm text-yellow-800">
-            NIK: 3272062407740899<br/>
-            Nama: SYAFRIL SANI<br/><br/>
-            NIK: admin<br/>
-            Nama: admin123
-          </p>
-        </div>
 
         <div className="mt-4 text-center">
           <p className="text-sm text-muted-foreground">

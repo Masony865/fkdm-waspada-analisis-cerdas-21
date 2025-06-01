@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -163,15 +164,6 @@ const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
             {isLoading ? "Memproses..." : "Masuk"}
           </Button>
         </form>
-
-        <div className="bg-yellow-50 p-3 rounded-lg text-sm">
-          <p className="text-yellow-800">
-            NIK: 3272062407740899<br/>
-            Nama: SYAFRIL SANI<br/><br/>
-            NIK: admin<br/>
-            Nama: admin123
-          </p>
-        </div>
       </DialogContent>
     </Dialog>
   );
