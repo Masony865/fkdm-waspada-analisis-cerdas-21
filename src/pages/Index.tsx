@@ -1,10 +1,10 @@
-
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/App";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import LoginDialog from "@/components/dialogs/LoginDialog";
+import { FileText } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -17,6 +17,11 @@ const Index = () => {
       navigate("/dashboard");
     }
   }, [isAuthenticated, navigate]);
+
+  const handleCreateVisitorReport = () => {
+    // Navigate to editor page for creating visitor report
+    navigate("/editor");
+  };
   
   return <div className="min-h-screen flex flex-col items-center justify-center bg-muted/30 fkdm-pattern">
       <div className="container mx-auto px-4 text-center">
@@ -90,6 +95,26 @@ const Index = () => {
             <p className="text-muted-foreground text-sm">
               Editor teks dengan template untuk pembuatan laporan yang terstruktur dan efisien.
             </p>
+          </div>
+        </div>
+
+        {/* Visitor Report Button - Added at the bottom */}
+        <div className="mt-16 mb-8">
+          <div className="bg-white/90 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-fkdm-gold/30 max-w-2xl mx-auto">
+            <h3 className="text-2xl font-bold text-fkdm-black mb-4">
+              Format Laporan Pengunjung
+            </h3>
+            <p className="text-muted-foreground mb-6">
+              Buat format laporan khusus untuk pengunjung dengan template yang telah disediakan
+            </p>
+            <Button 
+              size="lg" 
+              className="bg-fkdm-red hover:bg-red-700"
+              onClick={handleCreateVisitorReport}
+            >
+              <FileText className="h-5 w-5 mr-2" />
+              Buat Format Laporan Pengunjung
+            </Button>
           </div>
         </div>
       </div>
