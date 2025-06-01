@@ -1,37 +1,72 @@
 
-import { supabase } from "@/integrations/supabase/client";
 import { UserData } from "@/types";
+
+// Data anggota demo untuk login
+const demoAnggotaData = [
+  {
+    id: 1,
+    NIK: "3272062407740899",
+    NAMA: "SYAFRIL SANI",
+    JABATAN: "Ketua",
+    WILAYAH: "Baros",
+    PASFOTO: "https://i.pravatar.cc/150?img=1"
+  },
+  {
+    id: 2,
+    NIK: "3272061234567890",
+    NAMA: "BUDI SANTOSO",
+    JABATAN: "Sekretaris",
+    WILAYAH: "Cikole",
+    PASFOTO: "https://i.pravatar.cc/150?img=2"
+  },
+  {
+    id: 3,
+    NIK: "3272069876543210",
+    NAMA: "SITI RAHAYU",
+    JABATAN: "Bendahara",
+    WILAYAH: "Gunungpuyuh",
+    PASFOTO: "https://i.pravatar.cc/150?img=3"
+  },
+  {
+    id: 4,
+    NIK: "3272064567891234",
+    NAMA: "AHMAD WIJAYA",
+    JABATAN: "Anggota",
+    WILAYAH: "Lembursitu",
+    PASFOTO: "https://i.pravatar.cc/150?img=4"
+  },
+  {
+    id: 5,
+    NIK: "3272067890123456",
+    NAMA: "DEWI SARTIKA",
+    JABATAN: "Anggota",
+    WILAYAH: "Warudoyong",
+    PASFOTO: "https://i.pravatar.cc/150?img=5"
+  }
+];
 
 export const checkCredentialsWithSupabase = async (nik: string, nama: string): Promise<UserData | null> => {
   try {
     console.log("Checking credentials for NIK:", nik, "and NAMA:", nama);
     
-    const { data, error } = await supabase
-      .from("ANGGOTA FKDM")
-      .select("id, NIK, NAMA, JABATAN, WILAYAH, PASFOTO")
-      .eq("NIK", nik)
-      .eq("NAMA", nama)
-      .maybeSingle();
+    // Cari di data demo
+    const foundUser = demoAnggotaData.find(
+      user => user.NIK === nik && user.NAMA === nama
+    );
     
-    if (error) {
-      console.error("Supabase query error:", error);
-      return null;
+    if (foundUser) {
+      console.log("Found matching user in demo data:", foundUser);
+      return {
+        id: String(foundUser.id),
+        nama: foundUser.NAMA,
+        jabatan: foundUser.JABATAN,
+        wilayah: foundUser.WILAYAH,
+        pasfoto_url: foundUser.PASFOTO
+      };
     }
     
-    if (!data) {
-      console.log("No matching FKDM member found");
-      return null;
-    }
-
-    console.log("Found matching FKDM member:", data);
-    
-    return {
-      id: String(data.id),
-      nama: data.NAMA || "",
-      jabatan: data.JABATAN || "",
-      wilayah: data.WILAYAH || "",
-      pasfoto_url: data.PASFOTO || ""
-    };
+    console.log("No matching user found in demo data");
+    return null;
   } catch (error) {
     console.error("Error checking credentials:", error);
     return null;
@@ -50,3 +85,6 @@ export const checkAdminCredentials = (nik: string, nama: string): UserData | nul
   }
   return null;
 };
+
+// Export data demo untuk keperluan lain
+export const getDemoAnggotaData = () => demoAnggotaData;

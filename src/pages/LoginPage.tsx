@@ -14,16 +14,20 @@ import {
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/App";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Database } from "lucide-react";
+import { getDemoAnggotaData } from "@/services/authService";
 
 const LoginPage = () => {
   const [nik, setNik] = useState("");
   const [nama, setNama] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showNama, setShowNama] = useState(false);
+  const [showDemoData, setShowDemoData] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  const demoData = getDemoAnggotaData();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,12 +100,16 @@ const LoginPage = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="nama">Nama</Label>
-                  <a
-                    href="#"
-                    className="text-sm text-primary hover:underline"
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="text-sm text-primary hover:underline p-0 h-auto"
+                    onClick={() => setShowDemoData(!showDemoData)}
                   >
-                    Lupa nama?
-                  </a>
+                    <Database className="h-3 w-3 mr-1" />
+                    {showDemoData ? "Sembunyikan" : "Lihat Data"}
+                  </Button>
                 </div>
                 <div className="relative">
                   <Input
@@ -126,7 +134,25 @@ const LoginPage = () => {
                   </button>
                 </div>
               </div>
-              {/* Remove default login information */}
+              
+              {showDemoData && (
+                <div className="bg-blue-50 p-4 rounded-lg max-h-40 overflow-y-auto">
+                  <h4 className="font-semibold text-blue-900 mb-2">Data Demo Anggota:</h4>
+                  <div className="space-y-2 text-sm">
+                    {demoData.map((anggota) => (
+                      <div key={anggota.id} className="border-b border-blue-200 pb-1">
+                        <div className="font-mono text-blue-800">NIK: {anggota.NIK}</div>
+                        <div className="text-blue-700">Nama: {anggota.NAMA}</div>
+                      </div>
+                    ))}
+                    <div className="border-b border-blue-200 pb-1">
+                      <div className="font-mono text-blue-800">NIK: admin</div>
+                      <div className="text-blue-700">Nama: admin123</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               <Button
                 type="submit"
                 className="w-full bg-fkdm-red hover:bg-red-700"
@@ -143,6 +169,18 @@ const LoginPage = () => {
             </p>
           </CardFooter>
         </Card>
+
+        <div className="mt-4 bg-yellow-50 p-4 rounded-lg">
+          <p className="text-sm text-yellow-800">
+            <strong>Demo Login:</strong><br/>
+            NIK: 3272062407740899<br/>
+            Nama: SYAFRIL SANI<br/><br/>
+            <strong>Admin:</strong><br/>
+            NIK: admin<br/>
+            Nama: admin123
+          </p>
+        </div>
+
         <div className="mt-4 text-center">
           <p className="text-sm text-muted-foreground">
             © 2025 Forum Kewaspadaan Dini Masyarakat Kota Sukabumi
