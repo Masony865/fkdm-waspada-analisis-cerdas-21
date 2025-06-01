@@ -19,6 +19,7 @@ import DetailKecamatanPage from "./pages/DetailKecamatanPage";
 import LoginAnggotaPage from "./pages/LoginAnggotaPage";
 import InputLaporanPage from "./pages/InputLaporanPage";
 import AnalisisBarosPage from "./pages/AnalisisBarosPage";
+import UserService from "@/services/userService";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,8 @@ const App = () => {
 
   useEffect(() => {
     LocalStorageDB.initializeData();
+    // Initialize user data from SQL
+    UserService.initializeUserData();
   }, []);
 
   useEffect(() => {

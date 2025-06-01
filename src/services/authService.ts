@@ -1,7 +1,8 @@
 
 import { UserData } from "@/types";
+import { UserService } from "./userService";
 
-// Data anggota demo untuk login
+// Data anggota demo untuk login (kept for backward compatibility)
 const demoAnggotaData = [
   {
     id: 1,
@@ -49,7 +50,14 @@ export const checkCredentialsWithSupabase = async (nik: string, nama: string): P
   try {
     console.log("Checking credentials for NIK:", nik, "and NAMA:", nama);
     
-    // Cari di data demo
+    // Check against new user database first
+    const userFromDB = UserService.authenticateUser(nik, nama);
+    if (userFromDB) {
+      console.log("Found matching user in database:", userFromDB);
+      return userFromDB;
+    }
+    
+    // Fallback to demo data for backward compatibility
     const foundUser = demoAnggotaData.find(
       user => user.NIK === nik && user.NAMA === nama
     );
@@ -65,7 +73,7 @@ export const checkCredentialsWithSupabase = async (nik: string, nama: string): P
       };
     }
     
-    console.log("No matching user found in demo data");
+    console.log("No matching user found");
     return null;
   } catch (error) {
     console.error("Error checking credentials:", error);
