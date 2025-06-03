@@ -6,7 +6,6 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Form,
@@ -16,8 +15,17 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { UserService } from "@/services/userService";
 
 interface AdminTabProps {
   onSaveAdminSettings: () => void;
@@ -44,6 +52,10 @@ const formSchema = z.object({
 const AdminTab = ({ onSaveAdminSettings }: AdminTabProps) => {
   const [formError, setFormError] = useState<string | null>(null);
 
+  // Get admin users from database
+  const allUsers = UserService.getAllUserData();
+  const adminUsers = allUsers.filter(user => user.is_admin);
+
   // Define form with validation
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -64,132 +76,180 @@ const AdminTab = ({ onSaveAdminSettings }: AdminTabProps) => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Pengaturan Administrator</CardTitle>
-        <CardDescription>
-          Konfigurasikan akses dan kredensial administrator sistem.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {formError && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{formError}</AlertDescription>
-              </Alert>
-            )}
-
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Username Admin</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Username admin" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+    <div className="space-y-6">
+      {/* Tabel Admin Database */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Database Admin</CardTitle>
+          <CardDescription>
+            Daftar administrator yang terdaftar dalam sistem.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nama</TableHead>
+                <TableHead>Password/NIK</TableHead>
+                <TableHead>Wilayah</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {adminUsers.map((user, index) => (
+                <TableRow key={index}>
+                  <TableCell className="font-medium">{user.nama}</TableCell>
+                  <TableCell className="font-mono text-sm">{user.password}</TableCell>
+                  <TableCell>{user.wilayah}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      Admin
+                    </span>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {adminUsers.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-muted-foreground">
+                    Tidak ada data admin ditemukan
+                  </TableCell>
+                </TableRow>
               )}
-            />
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password Admin Baru</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="password" 
-                      placeholder="Masukkan password baru" 
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+      {/* Form Pengaturan Admin */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Pengaturan Administrator</CardTitle>
+          <CardDescription>
+            Konfigurasikan akses dan kredensial administrator sistem.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {formError && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{formError}</AlertDescription>
+                </Alert>
               )}
-            />
 
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Konfirmasi Password</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="password" 
-                      placeholder="Konfirmasi password baru" 
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="accessLevel"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Level Akses</FormLabel>
-                  <Select 
-                    defaultValue={field.value}
-                    onValueChange={field.onChange}
-                  >
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username Admin</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Pilih level akses" />
-                      </SelectTrigger>
+                      <Input placeholder="Username admin" {...field} />
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="super">Super Admin</SelectItem>
-                      <SelectItem value="editor">Editor</SelectItem>
-                      <SelectItem value="viewer">Viewer</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email Admin</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="email" 
-                      placeholder="email@contoh.com" 
-                      {...field} 
-                    />
-                  </FormControl>
-                  <p className="text-sm text-muted-foreground">
-                    Digunakan untuk pemulihan password dan notifikasi
-                  </p>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password Admin Baru</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="password" 
+                        placeholder="Masukkan password baru" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <div className="pt-4">
-              <Button 
-                type="submit" 
-                disabled={!form.formState.isValid || form.formState.isSubmitting}
-              >
-                Simpan Pengaturan
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Konfirmasi Password</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="password" 
+                        placeholder="Konfirmasi password baru" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="accessLevel"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Level Akses</FormLabel>
+                    <Select 
+                      defaultValue={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Pilih level akses" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="super">Super Admin</SelectItem>
+                        <SelectItem value="editor">Editor</SelectItem>
+                        <SelectItem value="viewer">Viewer</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email Admin</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="email" 
+                        placeholder="email@contoh.com" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <p className="text-sm text-muted-foreground">
+                      Digunakan untuk pemulihan password dan notifikasi
+                    </p>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="pt-4">
+                <Button 
+                  type="submit" 
+                  disabled={!form.formState.isValid || form.formState.isSubmitting}
+                >
+                  Simpan Pengaturan
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
