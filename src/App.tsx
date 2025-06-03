@@ -7,6 +7,7 @@ import { useState, createContext, useContext, useEffect } from "react";
 import { AuthContextType, UserData } from "@/types";
 import { checkCredentialsWithSupabase, checkAdminCredentials } from "@/services/authService";
 import { LocalStorageDB } from "@/utils/localStorage";
+import { UserService } from "@/services/userService";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
@@ -19,7 +20,6 @@ import DetailKecamatanPage from "./pages/DetailKecamatanPage";
 import LoginAnggotaPage from "./pages/LoginAnggotaPage";
 import InputLaporanPage from "./pages/InputLaporanPage";
 import AnalisisBarosPage from "./pages/AnalisisBarosPage";
-import UserService from "@/services/userService";
 
 const queryClient = new QueryClient();
 
