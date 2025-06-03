@@ -26,6 +26,7 @@ import {
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { UserService } from "@/services/userService";
+import { LocalStorageDB } from "@/utils/localStorage";
 
 interface AdminTabProps {
   onSaveAdminSettings: () => void;
@@ -55,6 +56,9 @@ const AdminTab = ({ onSaveAdminSettings }: AdminTabProps) => {
   // Get admin users from database
   const allUsers = UserService.getAllUserData();
   const adminUsers = allUsers.filter(user => user.is_admin);
+
+  // Get anggota data from localStorage
+  const anggotaData = LocalStorageDB.getAnggota();
 
   // Define form with validation
   const form = useForm<z.infer<typeof formSchema>>({
@@ -114,6 +118,53 @@ const AdminTab = ({ onSaveAdminSettings }: AdminTabProps) => {
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-muted-foreground">
                     Tidak ada data admin ditemukan
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {/* Tabel Anggota Database */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Database Anggota</CardTitle>
+          <CardDescription>
+            Daftar anggota FKDM yang akan membuat laporan sesuai wilayah masing-masing.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>NIK</TableHead>
+                <TableHead>Nama</TableHead>
+                <TableHead>Jabatan</TableHead>
+                <TableHead>Kecamatan</TableHead>
+                <TableHead>Kelurahan</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {anggotaData.map((anggota) => (
+                <TableRow key={anggota.id}>
+                  <TableCell className="font-mono text-sm">{anggota.nik}</TableCell>
+                  <TableCell className="font-medium">{anggota.nama}</TableCell>
+                  <TableCell>{anggota.jabatan}</TableCell>
+                  <TableCell>{anggota.kecamatan}</TableCell>
+                  <TableCell>{anggota.kelurahan}</TableCell>
+                  <TableCell>
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      Anggota
+                    </span>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {anggotaData.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center text-muted-foreground">
+                    Tidak ada data anggota ditemukan
                   </TableCell>
                 </TableRow>
               )}
