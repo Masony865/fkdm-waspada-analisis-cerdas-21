@@ -4,6 +4,7 @@ import { useAuth } from "@/App";
 import { useStore } from "zustand";
 import { chatOpen } from "@/stores/chatStore";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
 import LoginDialog from "../dialogs/LoginDialog";
 import ChatWidget from "../widgets/ChatWidget";
 import Header from "./Header";
