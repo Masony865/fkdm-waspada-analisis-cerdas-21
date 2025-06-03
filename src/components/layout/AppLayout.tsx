@@ -3,11 +3,12 @@ import { useState } from "react";
 import { useAuth } from "@/App";
 import { useStore } from "zustand";
 import { chatOpen } from "@/stores/chatStore";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import LoginDialog from "../dialogs/LoginDialog";
 import ChatWidget from "../widgets/ChatWidget";
 import Header from "./Header";
 import MobileMenu from "./MobileMenu";
-import Sidebar from "./Sidebar";
+import AppSidebar from "./AppSidebar";
 import Breadcrumbs from "./Breadcrumbs";
 import ChatButton from "./ChatButton";
 
@@ -28,45 +29,47 @@ const AppLayout = ({
   const isOpen = useStore(chatOpen, state => state.isOpen);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      {/* Header */}
-      <Header 
-        isMobileMenuOpen={isMobileMenuOpen}
-        setIsMobileMenuOpen={setIsMobileMenuOpen}
-        setIsLoginDialogOpen={setIsLoginDialogOpen}
-      />
-
-      {/* Login Dialog */}
-      <LoginDialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen} />
-
-      {/* Mobile menu */}
-      <MobileMenu 
-        isMobileMenuOpen={isMobileMenuOpen}
-        setIsMobileMenuOpen={setIsMobileMenuOpen}
-        setIsLoginDialogOpen={setIsLoginDialogOpen}
-      />
-
-      <div className="flex-1 flex">
-        {/* Sidebar (desktop only) */}
-        <Sidebar setIsLoginDialogOpen={setIsLoginDialogOpen} />
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-background">
+        {/* App Sidebar */}
+        <AppSidebar setIsLoginDialogOpen={setIsLoginDialogOpen} />
 
         {/* Main Content */}
-        <main className="flex-1">
-          <div className="container py-6">
+        <SidebarInset className="flex-1">
+          {/* Header */}
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumbs title={title} />
-            {children}
-          </div>
-        </main>
-      </div>
+          </header>
 
-      {/* Chat Widget */}
-      {showChat && isAuthenticated && (
-        <>
-          <ChatButton />
-          <ChatWidget />
-        </>
-      )}
-    </div>
+          {/* Page Content */}
+          <main className="flex-1">
+            <div className="container py-6">
+              {children}
+            </div>
+          </main>
+        </SidebarInset>
+
+        {/* Login Dialog */}
+        <LoginDialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen} />
+
+        {/* Mobile menu */}
+        <MobileMenu 
+          isMobileMenuOpen={isMobileMenuOpen}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
+          setIsLoginDialogOpen={setIsLoginDialogOpen}
+        />
+
+        {/* Chat Widget */}
+        {showChat && isAuthenticated && (
+          <>
+            <ChatButton />
+            <ChatWidget />
+          </>
+        )}
+      </div>
+    </SidebarProvider>
   );
 };
 
