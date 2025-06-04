@@ -27,7 +27,7 @@ const MemberTable = () => {
     return {
       ...member,
       wilayah,
-      is_admin: userInfo?.is_admin || false,
+      is_admin: userInfo?.is_admin || wilayah === 'Admin', // Set is_admin true if wilayah is Admin
       email: userInfo?.email || ''
     };
   });
