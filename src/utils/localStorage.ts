@@ -1,5 +1,6 @@
 
 import { LocalStorageService } from "@/services/localStorageService";
+import { MemberPhotoService } from "@/services/memberPhotoService";
 import { generateSampleData } from "@/utils/dataGenerator";
 
 export class LocalStorageDB {
@@ -9,6 +10,9 @@ export class LocalStorageDB {
       LocalStorageService.saveLaporan(laporan);
       LocalStorageService.saveAnggota(anggota);
     }
+    
+    // Initialize member photo data
+    MemberPhotoService.initializeMemberData();
   }
 
   // Re-export all methods from LocalStorageService for backward compatibility
