@@ -22,9 +22,11 @@ const MemberTable = () => {
   // Merge data to get complete member information
   const membersWithDetails = memberPhotoData.map(member => {
     const userInfo = allUsers.find(user => user.password === member.password);
+    const wilayah = userInfo?.wilayah || 'Admin'; // Changed from 'Tidak Diketahui' to 'Admin'
+    
     return {
       ...member,
-      wilayah: userInfo?.wilayah || 'Tidak Diketahui',
+      wilayah,
       is_admin: userInfo?.is_admin || false,
       email: userInfo?.email || ''
     };
