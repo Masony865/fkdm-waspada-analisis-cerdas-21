@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff, Database } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,28 +15,37 @@ import {
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/App";
-import { Eye, EyeOff, Database } from "lucide-react";
 import { getDemoAnggotaData } from "@/services/authService";
 
 const LoginPage = () => {
-  const [nik, setNik] = useState("");
-  const [nama, setNama] = useState("");
+  const [formData, setFormData] = useState({
+    nama: "",
+    nik: ""
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [showNama, setShowNama] = useState(false);
   const [showDemoData, setShowDemoData] = useState(false);
+  
   const { toast } = useToast();
   const navigate = useNavigate();
   const { login } = useAuth();
-
   const demoData = getDemoAnggotaData();
+
+  const handleInputChange = (field: keyof typeof formData) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: e.target.value
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      console.log("Attempting login with NIK:", nik, "and NAMA:", nama);
-      const success = await login(nik, nama);
+      console.log("Attempting login with NIK:", formData.nik, "and NAMA:", formData.nama);
+      const success = await login(formData.nik, formData.nama);
+      
       if (success) {
         toast({
           title: "Login Berhasil",
@@ -61,9 +71,8 @@ const LoginPage = () => {
     }
   };
 
-  const toggleNamaVisibility = () => {
-    setShowNama(!showNama);
-  };
+  const toggleNamaVisibility = () => setShowNama(!showNama);
+  const toggleDemoData = () => setShowDemoData(!showDemoData);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 fkdm-pattern p-4">
@@ -75,6 +84,7 @@ const LoginPage = () => {
             className="h-16 w-auto mt-4"
           />
         </div>
+        
         <Card className="border border-fkdm-gold/20 shadow-lg">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">
@@ -84,8 +94,10 @@ const LoginPage = () => {
               Masuk untuk mengakses sistem analisis FKDM
             </CardDescription>
           </CardHeader>
+          
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Nama Field */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="nama">Nama</Label>
@@ -94,7 +106,7 @@ const LoginPage = () => {
                     variant="ghost"
                     size="sm"
                     className="text-sm text-primary hover:underline p-0 h-auto"
-                    onClick={() => setShowDemoData(!showDemoData)}
+                    onClick={toggleDemoData}
                   >
                     <Database className="h-3 w-3 mr-1" />
                     {showDemoData ? "Sembunyikan" : "Lihat Data"}
@@ -105,8 +117,8 @@ const LoginPage = () => {
                     id="nama"
                     type={showNama ? "text" : "password"}
                     placeholder="Masukkan nama lengkap"
-                    value={nama}
-                    onChange={(e) => setNama(e.target.value)}
+                    value={formData.nama}
+                    onChange={handleInputChange("nama")}
                     required
                     className="pr-10"
                   />
@@ -114,27 +126,27 @@ const LoginPage = () => {
                     type="button"
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
                     onClick={toggleNamaVisibility}
+                    aria-label={showNama ? "Hide name" : "Show name"}
                   >
-                    {showNama ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
+                    {showNama ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
+
+              {/* NIK Field */}
               <div className="space-y-2">
                 <Label htmlFor="nik">NIK</Label>
                 <Input
                   id="nik"
                   type="text"
                   placeholder="Masukkan NIK Anda"
-                  value={nik}
-                  onChange={(e) => setNik(e.target.value)}
+                  value={formData.nik}
+                  onChange={handleInputChange("nik")}
                   required
                 />
               </div>
               
+              {/* Demo Data Display */}
               {showDemoData && (
                 <div className="bg-blue-50 p-4 rounded-lg max-h-40 overflow-y-auto">
                   <h4 className="font-semibold text-blue-900 mb-2">Data Anggota:</h4>
@@ -162,10 +174,10 @@ const LoginPage = () => {
               </Button>
             </form>
           </CardContent>
+          
           <CardFooter className="flex justify-center">
             <p className="text-xs text-center text-muted-foreground">
-              Untuk informasi lebih lanjut, hubungi administrator FKDM Kota
-              Sukabumi
+              Untuk informasi lebih lanjut, hubungi administrator FKDM Kota Sukabumi
             </p>
           </CardFooter>
         </Card>
