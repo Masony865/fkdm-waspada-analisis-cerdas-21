@@ -24,8 +24,8 @@ const Header = ({ isMobileMenuOpen, setIsMobileMenuOpen, setIsLoginDialogOpen }:
     navigate("/");
   };
 
-  // Get member photo data for profile picture
-  const memberPhotoData = userData ? MemberPhotoService.getMemberByNIK(userData.password) : null;
+  // Get member photo data for profile picture using userData.id as NIK
+  const memberPhotoData = userData ? MemberPhotoService.getMemberByNIK(userData.id) : null;
   
   // Convert Google Drive sharing links to direct image URLs
   const getDirectImageUrl = (driveUrl: string) => {
