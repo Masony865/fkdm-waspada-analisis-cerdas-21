@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/App";
 import { getProfileImageUrl, getUserInitials } from "@/utils/profileUtils";
+import { useState } from "react";
 
 interface UserDropdownProps {
   setIsLoginDialogOpen: (open: boolean) => void;
@@ -21,6 +22,7 @@ interface UserDropdownProps {
 const UserDropdown = ({ setIsLoginDialogOpen }: UserDropdownProps) => {
   const { isAuthenticated, userData, logout } = useAuth();
   const navigate = useNavigate();
+  const [imageError, setImageError] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -30,13 +32,26 @@ const UserDropdown = ({ setIsLoginDialogOpen }: UserDropdownProps) => {
   const profileImageUrl = userData ? getProfileImageUrl(userData) : "";
   const userInitials = userData ? getUserInitials(userData.nama) : "";
 
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
+  const handleImageLoad = () => {
+    setImageError(false);
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 rounded-full">
           <Avatar>
-            {isAuthenticated && userData ? (
-              <AvatarImage src={profileImageUrl} alt={userData.nama} />
+            {isAuthenticated && userData && profileImageUrl && !imageError ? (
+              <AvatarImage 
+                src={profileImageUrl} 
+                alt={userData.nama}
+                onError={handleImageError}
+                onLoad={handleImageLoad}
+              />
             ) : null}
             <AvatarFallback className="bg-fkdm-red text-white">
               {isAuthenticated && userData ? userInitials : <UserRound className="h-5 w-5" />}
