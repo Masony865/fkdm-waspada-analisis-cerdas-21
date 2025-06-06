@@ -40,42 +40,45 @@ const Header = ({ isMobileMenuOpen, setIsMobileMenuOpen, setIsLoginDialogOpen }:
 
   return (
     <header className="sticky top-0 z-30 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center">
+      <div className="container flex h-16 items-center justify-between">
+        {/* Left side - Logo and brand */}
         <div className="flex items-center gap-2 md:gap-4">
           <button className="md:hidden" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
             {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
-          <Link to="/" className="flex items-center gap-2">
-            <img src="/lovable-uploads/14426bc4-6a4c-4767-bed4-f1c0ede66761.png" alt="FKDM Logo" className="h-10 w-9" />
-            <span className="hidden md:inline-block font-bold text-lg">
-              FKDM Waspada
-            </span>
+          <Link to="/" className="flex items-center gap-3">
+            <img src="/lovable-uploads/14426bc4-6a4c-4767-bed4-f1c0ede66761.png" alt="FKDM Logo" className="h-10 w-10" />
+            <div className="hidden md:block">
+              <span className="font-bold text-lg text-fkdm-red">FKDM Waspada</span>
+              <p className="text-xs text-muted-foreground">Forum Kewaspadaan Dini Masyarakat</p>
+            </div>
           </Link>
         </div>
 
-        {/* User greeting section with profile picture */}
-        {isAuthenticated && userData && (
-          <div className="hidden md:flex items-center ml-6 flex-1">
-            <div className="flex items-center gap-3 bg-gradient-to-r from-fkdm-red/10 to-fkdm-gold/10 px-4 py-2 rounded-lg border border-fkdm-gold/20">
-              <Avatar className="h-10 w-10 border-2 border-fkdm-gold/50">
+        {/* Right side - User profile */}
+        <div className="flex items-center gap-4">
+          {isAuthenticated && userData && (
+            <div className="hidden md:flex items-center gap-3 bg-gradient-to-r from-fkdm-red/5 to-fkdm-gold/5 px-4 py-2 rounded-lg border border-fkdm-gold/20">
+              <Avatar className="h-12 w-12 border-2 border-fkdm-gold/50">
                 <AvatarImage src={profileImageUrl} alt={userData.nama} />
-                <AvatarFallback className="bg-fkdm-red text-white font-medium">
+                <AvatarFallback className="bg-fkdm-red text-white font-medium text-sm">
                   {userData.nama.split(' ').map(name => name[0]).join('').substring(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <div className="hidden lg:block">
+              <div>
                 <p className="text-sm font-semibold text-fkdm-red">
-                  Selamat datang, {userData.nama}
+                  {userData.nama}
                 </p>
                 <p className="text-xs text-muted-foreground">
+                  NIK: {userData.id}
+                </p>
+                <p className="text-xs text-fkdm-gold font-medium">
                   {userData.jabatan} | {userData.wilayah}
                 </p>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        <div className="ml-auto flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-10 w-10 rounded-full">
@@ -100,7 +103,8 @@ const Header = ({ isMobileMenuOpen, setIsMobileMenuOpen, setIsLoginDialogOpen }:
                 <>
                   <div className="px-2 py-1.5">
                     <p className="text-sm font-medium leading-none">{userData.nama}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{userData.jabatan}</p>
+                    <p className="text-xs text-muted-foreground mt-1">NIK: {userData.id}</p>
+                    <p className="text-xs text-muted-foreground">{userData.jabatan}</p>
                     <p className="text-xs text-muted-foreground">{userData.wilayah}</p>
                   </div>
                   <DropdownMenuSeparator />
