@@ -90,17 +90,6 @@ const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="nik">NIK</Label>
-            <Input
-              id="nik"
-              type="text"
-              placeholder="Masukkan NIK Anda"
-              value={nik}
-              onChange={(e) => setNik(e.target.value)}
-              required
-            />
-          </div>
-          <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="nama">Nama</Label>
               <Button
@@ -137,6 +126,17 @@ const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
               </button>
             </div>
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="nik">NIK</Label>
+            <Input
+              id="nik"
+              type="text"
+              placeholder="Masukkan NIK Anda"
+              value={nik}
+              onChange={(e) => setNik(e.target.value)}
+              required
+            />
+          </div>
           
           {showDemoData && (
             <div className="bg-blue-50 p-4 rounded-lg max-h-40 overflow-y-auto">
@@ -144,13 +144,13 @@ const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
               <div className="space-y-2 text-sm">
                 {demoData.map((anggota) => (
                   <div key={anggota.id} className="border-b border-blue-200 pb-1">
-                    <div className="font-mono text-blue-800">NIK: {anggota.NIK}</div>
                     <div className="text-blue-700">Nama: {anggota.NAMA}</div>
+                    <div className="font-mono text-blue-800">NIK: {anggota.NIK}</div>
                   </div>
                 ))}
                 <div className="border-b border-blue-200 pb-1">
-                  <div className="font-mono text-blue-800">NIK: admin</div>
                   <div className="text-blue-700">Nama: admin123</div>
+                  <div className="font-mono text-blue-800">NIK: admin</div>
                 </div>
               </div>
             </div>

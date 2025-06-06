@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import LoginDialog from "../dialogs/LoginDialog";
+import { MemberPhotoService } from "@/services/memberPhotoService";
 
 interface HeaderProps {
   isMobileMenuOpen: boolean;
@@ -23,6 +24,20 @@ const Header = ({ isMobileMenuOpen, setIsMobileMenuOpen, setIsLoginDialogOpen }:
     navigate("/");
   };
 
+  // Get member photo data for profile picture
+  const memberPhotoData = userData ? MemberPhotoService.getMemberByNIK(userData.password) : null;
+  
+  // Convert Google Drive sharing links to direct image URLs
+  const getDirectImageUrl = (driveUrl: string) => {
+    if (driveUrl && driveUrl.includes('drive.google.com/file/d/')) {
+      const fileId = driveUrl.match(/\/d\/(.+?)\//)?.[1];
+      return fileId ? `https://drive.google.com/thumbnail?id=${fileId}` : driveUrl;
+    }
+    return driveUrl;
+  };
+
+  const profileImageUrl = memberPhotoData ? getDirectImageUrl(memberPhotoData.pasfoto_convert) : "";
+
   return (
     <header className="sticky top-0 z-30 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
@@ -38,19 +53,23 @@ const Header = ({ isMobileMenuOpen, setIsMobileMenuOpen, setIsLoginDialogOpen }:
           </Link>
         </div>
 
-        {/* User greeting section */}
+        {/* User greeting section with profile picture */}
         {isAuthenticated && userData && (
-          <div className="hidden md:flex items-center ml-6">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-8 w-8 border border-fkdm-gold/30">
-                <AvatarImage src={userData.pasfoto_url || ""} alt={userData.nama} />
-                <AvatarFallback className="bg-fkdm-red text-white">
+          <div className="hidden md:flex items-center ml-6 flex-1">
+            <div className="flex items-center gap-3 bg-gradient-to-r from-fkdm-red/10 to-fkdm-gold/10 px-4 py-2 rounded-lg border border-fkdm-gold/20">
+              <Avatar className="h-10 w-10 border-2 border-fkdm-gold/50">
+                <AvatarImage src={profileImageUrl} alt={userData.nama} />
+                <AvatarFallback className="bg-fkdm-red text-white font-medium">
                   {userData.nama.split(' ').map(name => name[0]).join('').substring(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="hidden lg:block">
-                <p className="text-sm font-medium">Selamat datang, {userData.nama}</p>
-                <p className="text-xs text-muted-foreground">{userData.jabatan} | {userData.wilayah}</p>
+                <p className="text-sm font-semibold text-fkdm-red">
+                  Selamat datang, {userData.nama}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {userData.jabatan} | {userData.wilayah}
+                </p>
               </div>
             </div>
           </div>
@@ -62,7 +81,7 @@ const Header = ({ isMobileMenuOpen, setIsMobileMenuOpen, setIsLoginDialogOpen }:
               <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                 <Avatar>
                   {isAuthenticated && userData ? (
-                    <AvatarImage src={userData.pasfoto_url || ""} alt={userData.nama} />
+                    <AvatarImage src={profileImageUrl} alt={userData.nama} />
                   ) : null}
                   <AvatarFallback className="bg-fkdm-red text-white">
                     {isAuthenticated && userData ? 
