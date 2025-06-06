@@ -1,6 +1,6 @@
 
 import { useNavigate } from "react-router-dom";
-import { LogIn, UserRound, Settings, TextCursor } from "lucide-react";
+import { LogOut, UserRound, Settings, TextCursor } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
@@ -82,13 +82,13 @@ const UserDropdown = ({ setIsLoginDialogOpen }: UserDropdownProps) => {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
-              <LogIn className="mr-2 h-4 w-4" />
+              <LogOut className="mr-2 h-4 w-4" />
               <span>Keluar</span>
             </DropdownMenuItem>
           </>
         ) : (
           <DropdownMenuItem onClick={() => setIsLoginDialogOpen(true)}>
-            <LogIn className="mr-2 h-4 w-4" />
+            <UserRound className="mr-2 h-4 w-4" />
             <span>Masuk</span>
           </DropdownMenuItem>
         )}
